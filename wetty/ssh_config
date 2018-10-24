@@ -1,0 +1,3 @@
+Host localhost
+    IdentityFile /home/term/.ssh/id_rsa
+    User term

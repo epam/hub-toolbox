@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+WRAPDOCKER=${WRAPDOCKER:-/usr/local/bin/wrapdocker}
+DOCKER=${DOCKER:-/usr/local/bin/docker-cli}
+DOCKER_DAEMON_ARGS=${DOCKER_DAEMON_ARGS:--D}
+DOCKER_PID_FILE=${DOCKER_PID_FILE:-/var/run/docker.pid}
+
+if ! test -f "$DOCKER_PID_FILE"; then
+    echo "Docker daemon is not running! Starting..."
+    "$WRAPDOCKER" "$DOCKER"  >/dev/null 2>&1
+fi
+
+$DOCKER "$@"
