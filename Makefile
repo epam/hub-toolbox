@@ -6,7 +6,7 @@ export IMAGE_TAG     ?= latest
 
 REGISTRY_PASS ?= ~/.docker/agilestacks.txt
 
-ifndef GITHUB_API_TOKEN
+ifeq ($(GITHUB_API_TOKEN),)
 $(error Please supply GITHUB_API_TOKEN)
 endif
 
