@@ -275,6 +275,7 @@ RUN \
         curl \
         e2fsprogs \
         expat \
+        gettext \
         gnupg \
         iptables \
         jq \
