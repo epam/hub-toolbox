@@ -2,19 +2,19 @@ FROM alpine as blobs
 RUN apk update && \
     apk add zip gzip unzip tar curl
 
-ARG DIRENV_VERSION="2.13.1"
+ARG DIRENV_VERSION="2.17.0"
 ARG GOSU_VERSION="1.10"
 ARG HELM_VERSION="2.11.0"
 ARG HEPTIO_VERSION="1.10.3/2018-07-26"
 ARG KOMPOSE_VERSION="1.9.0"
 ARG KSONNET_VERSION="0.13.0"
-ARG KUBECTL_VERSION="1.11.3"
+ARG KUBECTL_VERSION="1.11.4"
 ARG TF_11_VERSION="0.11.3"
 ARG TF_9_VERSION="0.9.11"
 ARG TINI_VERSION="0.16.1"
 ARG VAULT_VERSION="0.9.6"
 ARG YQ_VERSION="2.1.1"
-ARG STERN_VERSION="1.8.0"
+ARG STERN_VERSION="1.10.0"
 
 ARG TF_PROVIDER_ARCHIVE_VERSION="1.0.0"
 ARG TF_PROVIDER_AWS_VERSION_0="1.39.0"
@@ -25,7 +25,6 @@ ARG TF_PROVIDER_EXTERNAL_VERSION="1.0.0"
 ARG TF_PROVIDER_GOOGLE_VERSION="1.19.1"
 ARG TF_PROVIDER_IGNITION_VERSION="1.0.1"
 ARG TF_PROVIDER_KUBERNETES_VERSION="1.3.0"
-# ARG TF_PROVIDER_KUBERNETES_CUSTOM_VERSION="1.1.10"
 ARG TF_PROVIDER_LOCAL_VERSION="1.1.0"
 ARG TF_PROVIDER_NULL_VERSION=1.0.0
 ARG TF_PROVIDER_TEMPLATE_VERSION=1.0.0
@@ -99,11 +98,6 @@ RUN FILE=terraform_${TF_9_VERSION}_linux_amd64.zip && \
     https://releases.hashicorp.com/terraform/${TF_9_VERSION}/terraform_${TF_9_VERSION}_linux_amd64.zip && \
     unzip $FILE -d /usr/local/bin && mv /usr/local/bin/terraform /usr/local/bin/terraform-v0.9
 
-# RUN FILE=terraform-provider-kubernetes_${TF_PROVIDER_KUBERNETES_CUSTOM_VERSION}_linux_amd64.zip && \
-#     test ! -f $FILE && curl -J -L -O \
-#     https://github.com/arkadijs/terraform-provider-kubernetes/releases/download/v${TF_PROVIDER_KUBERNETES_CUSTOM_VERSION}/$FILE && \
-#     unzip $FILE -d /opt/tf-custom-plugins
-
 RUN FILE=terraform-provider-archive_${TF_PROVIDER_ARCHIVE_VERSION}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
     https://releases.hashicorp.com/terraform-provider-archive/${TF_PROVIDER_ARCHIVE_VERSION}/$FILE && \
@@ -176,12 +170,12 @@ RUN FILE=vault_${VAULT_VERSION}_linux_amd64.zip && \
 
 ### Checkout github
 FROM alpine/git:latest as ghub-scm
-ARG GHUB_VERSION="2.5.1"
+ARG GHUB_VERSION="2.6.0"
 WORKDIR /go/src/github.com/github
 RUN git clone -b v${GHUB_VERSION} https://github.com/github/hub.git
 
 ### Build github
-FROM golang:1.10-alpine as ghub
+FROM golang:1.11-alpine as ghub
 COPY --from=ghub-scm /go /go
 RUN apk update && apk upgrade && \
     apk add --no-cache git bash
@@ -189,7 +183,7 @@ WORKDIR /go/src/github.com/github/hub
 RUN script/build -o /go/bin/ghub
 
 ### Minio client
-FROM golang:1.10-alpine as minio
+FROM golang:1.11-alpine as minio
 RUN apk update && apk upgrade && \
     apk add --no-cache git bash make perl
 RUN go get -d github.com/minio/mc
@@ -208,7 +202,7 @@ RUN git init && \
     git pull --depth=1 origin master
 
 ### Build Hub CLI
-FROM golang:1.10-alpine as hub
+FROM golang:1.11-alpine as hub
 COPY --from=hub-scm /workspace /usr/local/go
 RUN apk update && apk upgrade && \
     apk add --no-cache git
