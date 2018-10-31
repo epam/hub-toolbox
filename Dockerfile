@@ -205,12 +205,12 @@ RUN git init && \
 FROM golang:1.11-alpine as hub
 COPY --from=hub-scm /workspace /usr/local/go
 RUN apk update && apk upgrade && \
-    apk add --no-cache git
+    apk add --no-cache git make sed
 WORKDIR /usr/local/go/src/hub
-RUN go get github.com/kardianos/govendor && \
-    /go/bin/govendor sync
+RUN go get github.com/kardianos/govendor
+RUN /go/bin/govendor sync
 WORKDIR /usr/local/go
-RUN go build -v hub
+RUN make get
 
 ### Dind
 FROM docker:dind as dind
@@ -299,7 +299,7 @@ RUN ln -s /usr/local/bin/terraform-v0.9 /usr/local/bin/terraform
 RUN groupadd -r docker && \
     usermod -aG docker $(/usr/bin/whoami)
 
-COPY --from=hub /usr/local/go/hub /usr/local/bin/hub
+COPY --from=hub /usr/local/go/bin/linux/hub /usr/local/bin/hub
 
 VOLUME /var/lib/docker
 
