@@ -221,7 +221,7 @@ LABEL maintainer="Antons Kranga <anton@agilestacks.com>,Arkadi Shishlov <arkadi@
 
 ARG VERSION="unknown"
 
-ARG GIT_VERSION="2.19.1-r0"
+ARG GIT_VERSION="2.19.1-r1"
 
 ENV BACKEND_BUCKET   "terraform.agilestacks.io"
 ENV BACKEND_REGION   "us-east-1"
