@@ -34,6 +34,13 @@ if test -s "$envfile"; then
     envadd="--env-file $envfile"
 fi
 
+docker_config=$HOME/.docker/config.json
+if test -f $docker_config && grep osxkeychain $docker_config >/dev/null; then
+    pruned_docker_config=$(mktemp /tmp/docker.json.XXXXXX)
+    sed -e 's/osxkeychain//g' $docker_config > $pruned_docker_config
+    maybe_docker_config="-v $pruned_docker_config:$HOME/.docker/config.json"
+fi
+
 docker pull "$IMAGE:$IMAGE_VERSION" 2> /dev/null || true
 docker run -ti --rm \
     -h toolbox-"$(tty|sed -e 's|/dev/||')" \
@@ -45,6 +52,7 @@ docker run -ti --rm \
     -e 'PS1=\u@\e[92m\h\e[0m \w $ ' \
     -v "$HOME:$HOME" \
     -v "$BASEDIR:$BASEDIR" \
+    $maybe_docker_config \
     --privileged=true \
     --cap-add=NET_ADMIN \
     -w "$BASEDIR" \
@@ -52,4 +60,4 @@ docker run -ti --rm \
     "$IMAGE:$IMAGE_VERSION" "$@"
 echo "Shutting down toolbox... bye!"
 
-rm -f "$envfile"
+rm -f $envfile $pruned_docker_config
