@@ -219,7 +219,11 @@ FROM docker:dind as dind
 FROM alpine:3.8
 LABEL maintainer="Antons Kranga <anton@agilestacks.com>,Arkadi Shishlov <arkadi@agilestacks.com>"
 
-ARG VERSION="unknown"
+ARG VERSION="(unknown)"
+ARG TOOLBOX_VERSION="(unknown)"
+ARG HUB_CLI_VERSION="(unknown)"
+
+RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
 
 ARG GIT_VERSION="2.19.1-r1"
 
@@ -257,8 +261,6 @@ COPY etc/entrypoint  /usr/local/bin/entrypoint
 COPY etc/terraformrc /root/.terraformrc
 COPY etc/terraformrc /usr/local/share/.terraformrc
 COPY etc/bashrc      /opt/bashrc
-
-RUN echo "${VERSION}" > /etc/version
 
 RUN \
     apk update && apk upgrade && \

@@ -1,8 +1,10 @@
 .DEFAULT_GOAL := build
 
-export IMAGE         ?= agilestacks/toolbox
-export IMAGE_VERSION ?= $(shell git rev-parse HEAD | cut -c-7)
-export IMAGE_TAG     ?= latest
+IMAGE           ?= agilestacks/toolbox
+TOOLBOX_VERSION := $(shell git rev-parse HEAD | cut -c-7)
+HUB_CLI_VERSION := $(shell git ls-remote -q git@github.com:agilestacks/automation-hub-cli.git master | cut -c-7)
+IMAGE_VERSION   ?= $(TOOLBOX_VERSION)-$(HUB_CLI_VERSION)
+IMAGE_TAG       ?= latest
 
 REGISTRY_PASS ?= ~/.docker/agilestacks.txt
 
@@ -21,6 +23,8 @@ build:
 		$(DOCKER_BUILD_OPTS) \
 		--build-arg="GITHUB_TOKEN=$(GITHUB_API_TOKEN)" \
 		--build-arg="VERSION=$(IMAGE_VERSION)" \
+		--build-arg="TOOLBOX_VERSION=$(TOOLBOX_VERSION)" \
+		--build-arg="HUB_CLI_VERSION=$(HUB_CLI_VERSION)" \
 		--tag $(IMAGE):$(IMAGE_VERSION) \
 		--tag $(IMAGE):$(IMAGE_TAG) .
 .PHONY: build
