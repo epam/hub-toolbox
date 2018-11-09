@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := run
 
-export IMAGE         ?= agilestacks/toolbox
-export IMAGE_VERSION ?= wetty-$(shell git rev-parse HEAD | cut -c-7)
-export IMAGE_TAG     ?= wetty
+IMAGE         ?= agilestacks/toolbox
+IMAGE_VERSION ?= wetty-$(shell git rev-parse HEAD | cut -c-7)
+IMAGE_TAG     ?= wetty
 
 REGISTRY_PASS ?= ~/.docker/agilestacks.txt
 

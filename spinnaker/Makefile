@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := build
 
-export IMAGE         ?= agilestacks/toolbox
-export IMAGE_VERSION ?= spinnaker-$(shell git rev-parse HEAD | cut -c-7)
-export IMAGE_TAG     ?= spinnaker
+IMAGE         ?= agilestacks/toolbox
+IMAGE_VERSION ?= spinnaker-$(shell git rev-parse HEAD | cut -c-7)
+IMAGE_TAG     ?= spinnaker
 
 REGISTRY_PASS ?= ~/.docker/agilestacks.txt
 

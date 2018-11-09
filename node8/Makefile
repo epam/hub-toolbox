@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := run
 
-export IMAGE         ?= agilestacks/toolbox
-export IMAGE_VERSION ?= node8-$(shell git rev-parse HEAD | cut -c-7)
-export IMAGE_TAG     ?= node8
+IMAGE         ?= agilestacks/toolbox
+IMAGE_VERSION ?= node8-$(shell git rev-parse HEAD | cut -c-7)
+IMAGE_TAG     ?= node8
 
 REGISTRY_PASS ?= ~/.docker/agilestacks.txt
 
