@@ -24,7 +24,7 @@ build:
 
 push: login
 	$(docker) push $(IMAGE):$(IMAGE_VERSION)
-	$(docker) push $(IMAGE):$(IMAGE_TAG)	
+	$(docker) push $(IMAGE):$(IMAGE_TAG)
 .PHONY: push
 
 login:
