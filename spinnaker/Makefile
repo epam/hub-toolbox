@@ -14,9 +14,9 @@ deploy: build push
 
 build:
 	$(docker) build \
-	$(DOCKER_BUILD_OPTS) \
-	--tag $(IMAGE):$(IMAGE_VERSION) \
-	--tag $(IMAGE):$(IMAGE_TAG) .
+		$(DOCKER_BUILD_OPTS) \
+		--tag $(IMAGE):$(IMAGE_VERSION) \
+		--tag $(IMAGE):$(IMAGE_TAG) .
 .PHONY: build
 
 build-no-cache:
