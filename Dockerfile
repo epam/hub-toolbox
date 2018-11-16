@@ -29,6 +29,7 @@ ARG TF_PROVIDER_LOCAL_VERSION="1.1.0"
 ARG TF_PROVIDER_NULL_VERSION=1.0.0
 ARG TF_PROVIDER_TEMPLATE_VERSION=1.0.0
 ARG TF_PROVIDER_TLS_VERSION=1.0.1
+ARG TF_PROVIDER_RANDOM_VERSION=2.0.0
 
 RUN mkdir -p /opt/tf-plugins \
              /opt/tf-custom-plugins
@@ -161,6 +162,11 @@ RUN FILE=terraform-provider-template_${TF_PROVIDER_TEMPLATE_VERSION}_linux_amd64
 RUN FILE=terraform-provider-tls_${TF_PROVIDER_TLS_VERSION}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
     https://releases.hashicorp.com/terraform-provider-tls/${TF_PROVIDER_TLS_VERSION}/$FILE && \
+    unzip $FILE -d /opt/tf-plugins
+
+RUN FILE=terraform-provider-random_${TF_PROVIDER_RANDOM_VERSION}_linux_amd64.zip && \
+    test ! -f $FILE && curl -J -L -O \
+    https://releases.hashicorp.com/terraform-provider-random/${TF_PROVIDER_RANDOM_VERSION}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
 RUN FILE=vault_${VAULT_VERSION}_linux_amd64.zip && \
