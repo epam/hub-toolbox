@@ -211,9 +211,9 @@ RUN git init && \
 
 ### Build Hub CLI
 FROM golang:1.11-alpine as hub
-COPY --from=hub-scm /workspace /usr/local/go
 RUN apk update && apk upgrade && \
     apk add --no-cache git make sed
+COPY --from=hub-scm /workspace /usr/local/go
 WORKDIR /usr/local/go/src/hub
 RUN go get github.com/kardianos/govendor
 RUN /go/bin/govendor sync
