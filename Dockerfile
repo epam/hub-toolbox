@@ -233,7 +233,7 @@ ARG HUB_CLI_VERSION="(unknown)"
 
 RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
 
-ARG GIT_VERSION="2.19.2-r0"
+ARG GIT_VERSION="2.20.1-r0"
 
 ENV BACKEND_BUCKET   "terraform.agilestacks.io"
 ENV BACKEND_REGION   "us-east-1"
