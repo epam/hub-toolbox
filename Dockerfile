@@ -18,7 +18,7 @@ ARG STERN_VERSION="1.10.0"
 
 ARG TF_PROVIDER_ARCHIVE_VERSION="1.0.0"
 ARG TF_PROVIDER_AWS_VERSION_0="1.41.0"
-# ARG TF_PROVIDER_AWS_VERSION_1="1.37.0"
+ARG TF_PROVIDER_AWS_VERSION_1="1.57.0"
 # ARG TF_PROVIDER_AWS_VERSION_2="1.35.0"
 # ARG TF_PROVIDER_AWS_VERSION_3="1.32.0"
 ARG TF_PROVIDER_EXTERNAL_VERSION="1.0.0"
@@ -109,10 +109,10 @@ RUN FILE=terraform-provider-aws_${TF_PROVIDER_AWS_VERSION_0}_linux_amd64.zip && 
     https://releases.hashicorp.com/terraform-provider-aws/${TF_PROVIDER_AWS_VERSION_0}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
-# RUN FILE=terraform-provider-aws_${TF_PROVIDER_AWS_VERSION_1}_linux_amd64.zip && \
-#     test ! -f $FILE && curl -J -L -O \
-#     https://releases.hashicorp.com/terraform-provider-aws/${TF_PROVIDER_AWS_VERSION_1}/$FILE && \
-#     unzip $FILE -d /opt/tf-plugins
+RUN FILE=terraform-provider-aws_${TF_PROVIDER_AWS_VERSION_1}_linux_amd64.zip && \
+    test ! -f $FILE && curl -J -L -O \
+    https://releases.hashicorp.com/terraform-provider-aws/${TF_PROVIDER_AWS_VERSION_1}/$FILE && \
+    unzip $FILE -d /opt/tf-plugins
 
 # RUN FILE=terraform-provider-aws_${TF_PROVIDER_AWS_VERSION_2}_linux_amd64.zip && \
 #     test ! -f $FILE && curl -J -L -O \
