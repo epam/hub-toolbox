@@ -304,7 +304,7 @@ RUN \
     gosu nobody true && \
     rm -rf /var/cache/apk/* /tmp/*
 
-RUN ln -s /usr/local/bin/terraform-v0.9 /usr/local/bin/terraform
+RUN ln -s /usr/local/bin/terraform-v0.11 /usr/local/bin/terraform
 
 RUN groupadd -r docker && \
     usermod -aG docker $(/usr/bin/whoami)
