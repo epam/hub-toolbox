@@ -9,12 +9,13 @@ ARG HEPTIO_VERSION="1.10.3/2018-07-26"
 ARG KOMPOSE_VERSION="1.9.0"
 ARG KSONNET_VERSION="0.13.1"
 ARG KUBECTL_VERSION="1.13.4"
+ARG OC_VERSION="3.11.0-0cbc58b"
+ARG STERN_VERSION="1.10.0"
 ARG TF_11_VERSION="0.11.10"
 ARG TF_9_VERSION="0.9.11"
 ARG TINI_VERSION="0.16.1"
 ARG VAULT_VERSION="1.0.1"
 ARG YQ_VERSION="2.1.1"
-ARG STERN_VERSION="1.10.0"
 
 ARG TF_PROVIDER_ARCHIVE_VERSION="1.0.0"
 ARG TF_PROVIDER_AWS_VERSION_0="1.41.0"
@@ -86,7 +87,13 @@ RUN FILE=helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
         https://storage.googleapis.com/kubernetes-helm/$FILE && \
     tar -xvzf $FILE linux-amd64/helm --strip-components=1 && \
-    mv helm  /usr/local/bin
+    mv helm /usr/local/bin
+
+RUN FILE=openshift-origin-client-tools-v${OC_VERSION}-linux-64bit.tar.gz && \
+    test ! -f $FILE && curl -J -L -O \
+        https://github.com/openshift/origin/releases/download/v$(echo ${OC_VERSION} | cut -d- -f1)/$FILE && \
+    tar -xvzf $FILE openshift-origin-client-tools-v${OC_VERSION}-linux-64bit/oc --strip-components=1 && \
+    mv oc /usr/local/bin
 
 WORKDIR /opt/zip
 
