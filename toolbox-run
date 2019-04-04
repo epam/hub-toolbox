@@ -41,7 +41,10 @@ if test -f $docker_config && grep osxkeychain $docker_config >/dev/null; then
     maybe_docker_config="-v $pruned_docker_config:$HOME/.docker/config.json"
 fi
 
-docker pull "$IMAGE:$IMAGE_VERSION" 2> /dev/null || true
+# no pull if version is based on commit hashes
+if test -n "$(echo $IMAGE_VERSION | sed -E -e 's/[0-9a-f]{7}-[0-9a-f]{7}//')"; then
+    docker pull "$IMAGE:$IMAGE_VERSION" 2>/dev/null || true
+fi
 docker run -ti --rm \
     -h toolbox-"$(tty|sed -e 's|/dev/||')" \
     -e "USER=$USER" \
