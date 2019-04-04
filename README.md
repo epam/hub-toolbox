@@ -1,8 +1,8 @@
 # Toolbox
 
-Toolbox is a Docker image that is used by by Agile Stack's Control Plane automation tasks to perform provisioning operations on a stack, for example `deploy` and `undeploy`. Stack is a collection of software components like Kubernetes, Etcd, Vault, PostgreSQL, S3 buckets and other cloud resources, applications, etc. wired together yet developed independently.
+Toolbox is a Docker image that is used by Agile Stack's Control Plane automation tasks to perform provisioning operations on a stack, for example `deploy` and `undeploy`. Stack is a collection of software components like Kubernetes, Etcd, Vault, PostgreSQL, S3 buckets and other cloud resources, applications, etc. wired together yet developed independently.
 
-The image contains all the tools installed and configured that are required by the software components supported by Agile Stacks. It is based on [Alpine Linux](https://www.alpinelinux.org/about/) Docker image v3.8.
+The image contains all the tools installed and configured that are required by the software components supported by Agile Stacks. It is based on [Alpine Linux](https://www.alpinelinux.org/about/) Docker image v3.9.
 
 You could also run it locally via `./toolbox-run`.
 
@@ -16,6 +16,7 @@ The image contains following tools:
 
 - Agile Stack's Hub CLI (hub)
 - AWS CLI
+- Azure CLI
 - Direnv
 - Docker in Docker
 - Git and GitHub CLI (ghub)
@@ -25,9 +26,10 @@ The image contains following tools:
 - Ksonnet
 - Kubectl
 - Minio client
-- Python 2 with virtualenv
+- OpenShift CLI
+- Python 2 with virtualenv and Python 3
 - Stern
-- Terraform 0.9 and 0.10 with pre-cached set of provider plug-ins
+- Terraform 0.9 and 0.11 with pre-cached set of provider plug-ins
 - Tini init
 - Vault
 - zip, vim, rsync, sed, gnupg, bash, and of course curl.
