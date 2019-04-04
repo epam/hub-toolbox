@@ -230,7 +230,7 @@ RUN make get
 FROM docker:dind as dind
 
 ### Toolbox
-FROM alpine:3.8
+FROM alpine:3.9
 LABEL maintainer="Antons Kranga <anton@agilestacks.com>,Arkadi Shishlov <arkadi@agilestacks.com>"
 
 ARG VERSION="(unknown)"
@@ -238,8 +238,6 @@ ARG TOOLBOX_VERSION="(unknown)"
 ARG HUB_CLI_VERSION="(unknown)"
 
 RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
-
-ARG GIT_VERSION="2.21.0-r0"
 
 ENV BACKEND_BUCKET   "terraform.agilestacks.io"
 ENV BACKEND_REGION   "us-east-1"
@@ -286,6 +284,8 @@ RUN \
         e2fsprogs \
         expat \
         gettext \
+        git \
+        git-subtree \
         gnupg \
         iptables \
         jq \
@@ -298,14 +298,13 @@ RUN \
         py2-virtualenv \
         rsync \
         sed \
+        shadow \
         su-exec \
         util-linux \
         vim \
         zip \
     && \
-    apk add --no-cache git=${GIT_VERSION} git-subtree=${GIT_VERSION} --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main && \
     apk add --no-cache aws-cli --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
-    apk add --no-cache shadow --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community && \
     chmod +x /usr/local/bin/* && \
     gosu nobody true && \
     rm -rf /var/cache/apk/* /tmp/*
