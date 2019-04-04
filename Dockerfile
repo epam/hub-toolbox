@@ -296,15 +296,18 @@ RUN \
         openssl \
         pwgen \
         py2-virtualenv \
+        python3 \
         rsync \
         sed \
         shadow \
         su-exec \
         util-linux \
         vim \
-        zip \
-    && \
-    apk add --no-cache aws-cli --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
+        zip && \
+    apk add --virtual=py-build gcc libffi-dev musl-dev openssl-dev python3-dev && \
+    pip3 --no-cache-dir install awscli azure-cli && \
+    apk del --purge py-build && \
+    sed -i -e 's/^python /python3 /' /usr/bin/az && \
     chmod +x /usr/local/bin/* && \
     gosu nobody true && \
     rm -rf /var/cache/apk/* /tmp/*
