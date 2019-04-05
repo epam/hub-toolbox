@@ -246,6 +246,8 @@ ARG HUB_CLI_VERSION="(unknown)"
 
 RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
 
+ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/google-cloud-sdk/bin
+
 ENV BACKEND_BUCKET   "terraform.agilestacks.io"
 ENV BACKEND_REGION   "us-east-1"
 ENV TF_INPUT         "0"
@@ -318,6 +320,10 @@ RUN \
     chmod +x /usr/local/bin/* && \
     gosu nobody true && \
     rm -rf /var/cache/apk/* /tmp/*
+
+RUN curl -L https://sdk.cloud.google.com | bash -s - --install-dir=/usr/local --disable-prompts && \
+    gcloud config set core/disable_usage_reporting true && \
+    gcloud config set component_manager/disable_update_check true
 
 RUN ln -s /usr/local/bin/terraform-v0.11 /usr/local/bin/terraform
 
