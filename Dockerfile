@@ -189,12 +189,12 @@ RUN FILE=vault_${VAULT_VERSION}_linux_amd64.zip && \
 
 ### Checkout github
 FROM alpine/git:latest as ghub-scm
-ARG GHUB_VERSION="2.6.0"
+ARG GHUB_VERSION="2.11.1"
 WORKDIR /go/src/github.com/github
 RUN git clone -b v${GHUB_VERSION} https://github.com/github/hub.git
 
 ### Build github
-FROM golang:1.11-alpine as ghub
+FROM golang:1.12-alpine as ghub
 COPY --from=ghub-scm /go /go
 RUN apk update && apk upgrade && \
     apk add --no-cache git bash
@@ -202,7 +202,7 @@ WORKDIR /go/src/github.com/github/hub
 RUN script/build -o /go/bin/ghub
 
 ### Minio client
-FROM golang:1.11-alpine as minio
+FROM golang:1.12-alpine as minio
 RUN apk update && apk upgrade && \
     apk add --no-cache git bash make perl
 RUN go get -d github.com/minio/mc
