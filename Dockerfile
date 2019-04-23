@@ -248,8 +248,8 @@ RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
 
 ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/google-cloud-sdk/bin
 
-ENV BACKEND_BUCKET   "terraform.agilestacks.io"
-ENV BACKEND_REGION   "us-east-1"
+ENV STATE_BUCKET     "terraform.agilestacks.io"
+ENV STATE_REGION     "us-east-1"
 ENV TF_INPUT         "0"
 ENV RELEASE_TRACK    "stable"
 ENV LANG             "C.UTF-8"
@@ -275,13 +275,6 @@ COPY --from=blobs /opt/tf-plugins ${TF_PLUGIN_CACHE_DIR}/linux_amd64/
 COPY --from=blobs /opt/tf-custom-plugins /root/.terraform.d/plugins/linux_amd64/
 COPY --from=ghub  /go/bin/ghub /usr/local/bin/ghub
 COPY --from=minio /minio-client /usr/local/bin/mc
-
-COPY etc/wrapdocker  /usr/local/bin/wrapdocker
-COPY etc/dmsetup     /usr/local/bin/dmsetup
-COPY etc/entrypoint  /usr/local/bin/entrypoint
-COPY etc/terraformrc /root/.terraformrc
-COPY etc/terraformrc /usr/local/share/.terraformrc
-COPY etc/bashrc      /opt/bashrc
 
 RUN \
     apk update && apk upgrade && \
@@ -329,12 +322,19 @@ RUN curl -L https://sdk.cloud.google.com | bash -s - --install-dir=/usr/local --
 RUN v=2.29-r0; wget -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
     wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$v/glibc-$v.apk && \
     apk add glibc-$v.apk && \
-    rm -f glibc-$v.apk /var/cache/apk/*
+    rm -rf glibc-$v.apk /var/cache/apk/* /tmp/*
 
 RUN ln -s /usr/local/bin/terraform-v0.11 /usr/local/bin/terraform
 
 RUN groupadd -r docker && \
     usermod -aG docker $(/usr/bin/whoami)
+
+COPY etc/wrapdocker  /usr/local/bin/wrapdocker
+COPY etc/dmsetup     /usr/local/bin/dmsetup
+COPY etc/entrypoint  /usr/local/bin/entrypoint
+COPY etc/terraformrc /root/.terraformrc
+COPY etc/terraformrc /usr/local/share/.terraformrc
+COPY etc/bashrc      /opt/bashrc
 
 COPY --from=hub /usr/local/go/bin/linux/hub /usr/local/bin/hub
 

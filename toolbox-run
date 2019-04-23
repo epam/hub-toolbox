@@ -28,7 +28,7 @@ if  test -z "${AWS_PROFILE}" && \
 fi
 
 envfile=$(mktemp)
-env | grep -E '^(AWS_|TF_|TERM=|LANG=|LC_)' >"$envfile"
+env | grep -E '^(AWS_|GOOGLE_|AZURE_|TF_|TERM=|LANG=|LC_)' >"$envfile"
 envadd=""
 if test -s "$envfile"; then
     envadd="--env-file $envfile"
@@ -47,6 +47,7 @@ if test -n "$(echo $IMAGE_VERSION | sed -E -e 's/[0-9a-f]{7}-[0-9a-f]{7}//')"; t
 fi
 docker run -ti --rm \
     -h toolbox-"$(tty|sed -e 's|/dev/||')" \
+    -e TMPDIR=/tmp \
     -e "USER=$USER" \
     -e "UID=$(id -u)" \
     -e "GID=$(id -g)" \

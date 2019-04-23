@@ -23,8 +23,21 @@ if echo "${ARGS##*/}" | grep -q "bash"; then
     ARGS="$ARGS --rcfile /opt/bashrc"
 fi
 
+if test -z "$TMPDIR"; then
+    export TMPDIR=/tmp
+fi
+
+# write GCP credentials into file
+case "$GOOGLE_APPLICATION_CREDENTIALS" in {*)
+    file=$(mktemp -t google-application-credentials.json.XXXXXX)
+    echo "$GOOGLE_APPLICATION_CREDENTIALS" > $file
+    chmod 0644 $file
+    export GOOGLE_APPLICATION_CREDENTIALS=$file
+esac
+
+
 if test "$USER" = "root"; then
-    HOME="/root"
+    export HOME="/root"
 
     # shellcheck disable=SC2086
     tini -s -- $ARGS
