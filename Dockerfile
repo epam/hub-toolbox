@@ -276,6 +276,12 @@ COPY --from=blobs /opt/tf-custom-plugins /root/.terraform.d/plugins/linux_amd64/
 COPY --from=ghub  /go/bin/ghub /usr/local/bin/ghub
 COPY --from=minio /minio-client /usr/local/bin/mc
 
+COPY etc/wrapdocker  /usr/local/bin/wrapdocker
+COPY etc/dmsetup     /usr/local/bin/dmsetup
+COPY etc/terraformrc /root/.terraformrc
+COPY etc/terraformrc /usr/local/share/.terraformrc
+COPY etc/bashrc      /opt/bashrc
+
 RUN \
     apk update && apk upgrade && \
     apk add --no-cache \
@@ -329,13 +335,7 @@ RUN ln -s /usr/local/bin/terraform-v0.11 /usr/local/bin/terraform
 RUN groupadd -r docker && \
     usermod -aG docker $(/usr/bin/whoami)
 
-COPY etc/wrapdocker  /usr/local/bin/wrapdocker
-COPY etc/dmsetup     /usr/local/bin/dmsetup
 COPY etc/entrypoint  /usr/local/bin/entrypoint
-COPY etc/terraformrc /root/.terraformrc
-COPY etc/terraformrc /usr/local/share/.terraformrc
-COPY etc/bashrc      /opt/bashrc
-
 COPY --from=hub /usr/local/go/bin/linux/hub /usr/local/bin/hub
 
 VOLUME /var/lib/docker
