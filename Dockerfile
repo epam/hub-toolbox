@@ -29,7 +29,8 @@ ARG TF_PROVIDER_IGNITION_VERSION="1.0.1"
 ARG TF_PROVIDER_KUBERNETES_VERSION="1.3.0"
 ARG TF_PROVIDER_LOCAL_VERSION="1.1.0"
 ARG TF_PROVIDER_NULL_VERSION=1.0.0
-ARG TF_PROVIDER_TEMPLATE_VERSION=1.0.0
+ARG TF_PROVIDER_TEMPLATE_VERSION_1=1.0.0
+ARG TF_PROVIDER_TEMPLATE_VERSION_2=2.1.2
 ARG TF_PROVIDER_TLS_VERSION=1.0.1
 ARG TF_PROVIDER_RANDOM_VERSION=2.0.0
 
@@ -167,9 +168,14 @@ RUN FILE=terraform-provider-null_${TF_PROVIDER_NULL_VERSION}_linux_amd64.zip && 
     https://releases.hashicorp.com/terraform-provider-null/${TF_PROVIDER_NULL_VERSION}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
-RUN FILE=terraform-provider-template_${TF_PROVIDER_TEMPLATE_VERSION}_linux_amd64.zip && \
+RUN FILE=terraform-provider-template_${TF_PROVIDER_TEMPLATE_VERSION_1}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
-    https://releases.hashicorp.com/terraform-provider-template/${TF_PROVIDER_TEMPLATE_VERSION}/$FILE && \
+    https://releases.hashicorp.com/terraform-provider-template/${TF_PROVIDER_TEMPLATE_VERSION_1}/$FILE && \
+    unzip $FILE -d /opt/tf-plugins
+
+RUN FILE=terraform-provider-template_${TF_PROVIDER_TEMPLATE_VERSION_2}_linux_amd64.zip && \
+    test ! -f $FILE && curl -J -L -O \
+    https://releases.hashicorp.com/terraform-provider-template/${TF_PROVIDER_TEMPLATE_VERSION_2}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
 RUN FILE=terraform-provider-tls_${TF_PROVIDER_TLS_VERSION}_linux_amd64.zip && \
