@@ -17,23 +17,20 @@ ARG TINI_VERSION="0.16.1"
 ARG VAULT_VERSION="1.1.2"
 ARG YQ_VERSION="2.1.1"
 
-ARG TF_PROVIDER_ARCHIVE_VERSION="1.0.0"
+ARG TF_PROVIDER_ARCHIVE_VERSION="1.2.2"
 ARG TF_PROVIDER_AWS_VERSION_0="1.41.0"
 ARG TF_PROVIDER_AWS_VERSION_1="1.60.0"
 ARG TF_PROVIDER_AWS_VERSION_2="2.11.0"
-# ARG TF_PROVIDER_AWS_VERSION_3="1.32.0"
 ARG TF_PROVIDER_AZURE_VERSION="1.27.1"
-ARG TF_PROVIDER_EXTERNAL_VERSION="1.0.0"
+ARG TF_PROVIDER_EXTERNAL_VERSION="1.1.2"
 ARG TF_PROVIDER_GOOGLE_VERSION="2.6.0"
 ARG TF_PROVIDER_IGNITION_VERSION="1.0.1"
 ARG TF_PROVIDER_KUBERNETES_VERSION="1.6.2"
-ARG TF_PROVIDER_LOCAL_VERSION_1="1.1.0"
-ARG TF_PROVIDER_LOCAL_VERSION_2="1.2.2"
-ARG TF_PROVIDER_NULL_VERSION=1.0.0
-ARG TF_PROVIDER_TEMPLATE_VERSION_1=1.0.0
-ARG TF_PROVIDER_TEMPLATE_VERSION_2=2.1.2
-ARG TF_PROVIDER_TLS_VERSION=1.0.1
-ARG TF_PROVIDER_RANDOM_VERSION=2.1.2
+ARG TF_PROVIDER_LOCAL_VERSION="1.2.2"
+ARG TF_PROVIDER_NULL_VERSION="2.1.2"
+ARG TF_PROVIDER_TEMPLATE_VERSION="2.1.2"
+ARG TF_PROVIDER_TLS_VERSION="2.0.1"
+ARG TF_PROVIDER_RANDOM_VERSION="2.1.2"
 
 RUN mkdir -p /opt/tf-plugins \
              /opt/tf-custom-plugins
@@ -129,11 +126,6 @@ RUN FILE=terraform-provider-aws_${TF_PROVIDER_AWS_VERSION_2}_linux_amd64.zip && 
     https://releases.hashicorp.com/terraform-provider-aws/${TF_PROVIDER_AWS_VERSION_2}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
-# RUN FILE=terraform-provider-aws_${TF_PROVIDER_AWS_VERSION_3}_linux_amd64.zip && \
-#     test ! -f $FILE && curl -J -L -O \
-#     https://releases.hashicorp.com/terraform-provider-aws/${TF_PROVIDER_AWS_VERSION_3}/$FILE && \
-#     unzip $FILE -d /opt/tf-plugins
-
 RUN FILE=terraform-provider-azurerm_${TF_PROVIDER_AZURE_VERSION}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
     https://releases.hashicorp.com/terraform-provider-azurerm/${TF_PROVIDER_AZURE_VERSION}/$FILE && \
@@ -159,14 +151,9 @@ RUN FILE=terraform-provider-kubernetes_${TF_PROVIDER_KUBERNETES_VERSION}_linux_a
     https://releases.hashicorp.com/terraform-provider-kubernetes/${TF_PROVIDER_KUBERNETES_VERSION}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
-RUN FILE=terraform-provider-local_${TF_PROVIDER_LOCAL_VERSION_1}_linux_amd64.zip && \
+RUN FILE=terraform-provider-local_${TF_PROVIDER_LOCAL_VERSION}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
-    https://releases.hashicorp.com/terraform-provider-local/${TF_PROVIDER_LOCAL_VERSION_1}/$FILE && \
-    unzip $FILE -d /opt/tf-plugins
-
-RUN FILE=terraform-provider-local_${TF_PROVIDER_LOCAL_VERSION_2}_linux_amd64.zip && \
-    test ! -f $FILE && curl -J -L -O \
-    https://releases.hashicorp.com/terraform-provider-local/${TF_PROVIDER_LOCAL_VERSION_2}/$FILE && \
+    https://releases.hashicorp.com/terraform-provider-local/${TF_PROVIDER_LOCAL_VERSION}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
 RUN FILE=terraform-provider-null_${TF_PROVIDER_NULL_VERSION}_linux_amd64.zip && \
@@ -174,14 +161,9 @@ RUN FILE=terraform-provider-null_${TF_PROVIDER_NULL_VERSION}_linux_amd64.zip && 
     https://releases.hashicorp.com/terraform-provider-null/${TF_PROVIDER_NULL_VERSION}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
-RUN FILE=terraform-provider-template_${TF_PROVIDER_TEMPLATE_VERSION_1}_linux_amd64.zip && \
+RUN FILE=terraform-provider-template_${TF_PROVIDER_TEMPLATE_VERSION}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
-    https://releases.hashicorp.com/terraform-provider-template/${TF_PROVIDER_TEMPLATE_VERSION_1}/$FILE && \
-    unzip $FILE -d /opt/tf-plugins
-
-RUN FILE=terraform-provider-template_${TF_PROVIDER_TEMPLATE_VERSION_2}_linux_amd64.zip && \
-    test ! -f $FILE && curl -J -L -O \
-    https://releases.hashicorp.com/terraform-provider-template/${TF_PROVIDER_TEMPLATE_VERSION_2}/$FILE && \
+    https://releases.hashicorp.com/terraform-provider-template/${TF_PROVIDER_TEMPLATE_VERSION}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
 RUN FILE=terraform-provider-tls_${TF_PROVIDER_TLS_VERSION}_linux_amd64.zip && \
