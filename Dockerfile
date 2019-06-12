@@ -20,7 +20,7 @@ ARG YQ_VERSION="2.1.1"
 ARG TF_PROVIDER_ARCHIVE_VERSION="1.2.2"
 ARG TF_PROVIDER_AWS_VERSION_0="1.41.0"
 ARG TF_PROVIDER_AWS_VERSION_1="1.60.0"
-ARG TF_PROVIDER_AWS_VERSION_2="2.11.0"
+ARG TF_PROVIDER_AWS_VERSION_2="2.14.0"
 ARG TF_PROVIDER_AZURE_VERSION="1.29.0"
 ARG TF_PROVIDER_EXTERNAL_VERSION="1.1.2"
 ARG TF_PROVIDER_GOOGLE_VERSION="2.7.0"
@@ -33,7 +33,7 @@ ARG TF_PROVIDER_TLS_VERSION="2.0.1"
 ARG TF_PROVIDER_RANDOM_VERSION="2.1.2"
 
 RUN mkdir -p /opt/tf-plugins \
-             /opt/tf-custom-plugins
+    /opt/tf-custom-plugins
 
 WORKDIR /usr/local/bin/
 
@@ -78,19 +78,19 @@ WORKDIR /opt/tar
 
 RUN FILE=ks_${KSONNET_VERSION}_linux_amd64.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
-        https://github.com/ksonnet/ksonnet/releases/download/v${KSONNET_VERSION}/$FILE && \
+    https://github.com/ksonnet/ksonnet/releases/download/v${KSONNET_VERSION}/$FILE && \
     tar -xvzf $FILE ks_${KSONNET_VERSION}_linux_amd64/ks --strip-components=1 && \
     mv ks /usr/local/bin
 
 RUN FILE=helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
-        https://storage.googleapis.com/kubernetes-helm/$FILE && \
+    https://storage.googleapis.com/kubernetes-helm/$FILE && \
     tar -xvzf $FILE linux-amd64/helm --strip-components=1 && \
     mv helm /usr/local/bin
 
 RUN FILE=openshift-origin-client-tools-v${OC_VERSION}-linux-64bit.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
-        https://github.com/openshift/origin/releases/download/v$(echo ${OC_VERSION} | cut -d- -f1)/$FILE && \
+    https://github.com/openshift/origin/releases/download/v$(echo ${OC_VERSION} | cut -d- -f1)/$FILE && \
     tar -xvzf $FILE openshift-origin-client-tools-v${OC_VERSION}-linux-64bit/oc --strip-components=1 && \
     mv oc /usr/local/bin
 
@@ -284,34 +284,34 @@ COPY etc/bashrc      /opt/bashrc
 RUN \
     apk update && apk upgrade && \
     apk add --no-cache \
-        bash \
-        bc \
-        ca-certificates \
-        curl \
-        e2fsprogs \
-        expat \
-        gettext \
-        git \
-        git-subtree \
-        gnupg \
-        iptables \
-        jq \
-        less \
-        lxc \
-        make \
-        openssh \
-        openssl \
-        pwgen \
-        py2-virtualenv \
-        python3 \
-        rsync \
-        sed \
-        shadow \
-        su-exec \
-        util-linux \
-        vim \
-        wget \
-        zip && \
+    bash \
+    bc \
+    ca-certificates \
+    curl \
+    e2fsprogs \
+    expat \
+    gettext \
+    git \
+    git-subtree \
+    gnupg \
+    iptables \
+    jq \
+    less \
+    lxc \
+    make \
+    openssh \
+    openssl \
+    pwgen \
+    py2-virtualenv \
+    python3 \
+    rsync \
+    sed \
+    shadow \
+    su-exec \
+    util-linux \
+    vim \
+    wget \
+    zip && \
     apk add --virtual=py-build gcc libffi-dev musl-dev openssl-dev python3-dev && \
     pip3 --no-cache-dir install awscli azure-cli && \
     apk del --purge py-build && \
