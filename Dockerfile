@@ -12,7 +12,7 @@ ARG KUBECTL_VERSION="1.14.3"
 ARG OC_VERSION="3.11.0-0cbc58b"
 ARG STERN_VERSION="1.10.0"
 ARG TF_11_VERSION="0.11.14"
-ARG TF_9_VERSION="0.9.11"
+ARG TF_12_VERSION="0.12.2"
 ARG TINI_VERSION="0.16.1"
 ARG VAULT_VERSION="1.1.2"
 ARG YQ_VERSION="2.1.1"
@@ -101,10 +101,10 @@ RUN FILE=terraform_${TF_11_VERSION}_linux_amd64.zip && \
     https://releases.hashicorp.com/terraform/${TF_11_VERSION}/terraform_${TF_11_VERSION}_linux_amd64.zip && \
     unzip $FILE -d /usr/local/bin && mv /usr/local/bin/terraform /usr/local/bin/terraform-v0.11
 
-RUN FILE=terraform_${TF_9_VERSION}_linux_amd64.zip && \
+RUN FILE=terraform_${TF_12_VERSION}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
-    https://releases.hashicorp.com/terraform/${TF_9_VERSION}/terraform_${TF_9_VERSION}_linux_amd64.zip && \
-    unzip $FILE -d /usr/local/bin && mv /usr/local/bin/terraform /usr/local/bin/terraform-v0.9
+    https://releases.hashicorp.com/terraform/${TF_12_VERSION}/terraform_${TF_12_VERSION}_linux_amd64.zip && \
+    unzip $FILE -d /usr/local/bin && mv /usr/local/bin/terraform /usr/local/bin/terraform-v0.12
 
 RUN FILE=terraform-provider-archive_${TF_PROVIDER_ARCHIVE_VERSION}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
