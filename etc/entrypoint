@@ -61,11 +61,11 @@ else
         ln /root/.terraform.d/plugin-cache/linux_amd64/* $HOME/.terraform.d/plugin-cache/linux_amd64/
         export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
     fi
-    if ! test -d $HOME/.terraform.d/plugins/linux_amd64; then
-        mkdir -p $HOME/.terraform.d/plugins/linux_amd64
-        chown $UID:$GID $HOME/.terraform.d/plugins/linux_amd64
-        ln /root/.terraform.d/plugins/linux_amd64/* $HOME/.terraform.d/plugins/linux_amd64/
-    fi
+    # if ! test -d $HOME/.terraform.d/plugins/linux_amd64; then
+    #     mkdir -p $HOME/.terraform.d/plugins/linux_amd64
+    #     chown $UID:$GID $HOME/.terraform.d/plugins/linux_amd64
+    #     ln /root/.terraform.d/plugins/linux_amd64/* $HOME/.terraform.d/plugins/linux_amd64/
+    # fi
 
     # wrapper script also starts docker daemon
     # doesn't work on Mac? - long timeout
