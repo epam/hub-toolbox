@@ -22,7 +22,7 @@ build:
 	$(docker) build \
 		$(DOCKER_BUILD_OPTS) \
 		--build-arg="GITHUB_TOKEN=$(GITHUB_API_TOKEN)" \
-		--build-arg="VERSION=$(IMAGE_VERSION)" \
+		--build-arg="IMAGE_VERSION=$(IMAGE_VERSION)" \
 		--build-arg="TOOLBOX_VERSION=$(TOOLBOX_VERSION)" \
 		--build-arg="HUB_CLI_VERSION=$(HUB_CLI_VERSION)" \
 		--tag $(IMAGE):$(IMAGE_VERSION) \

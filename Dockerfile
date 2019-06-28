@@ -239,11 +239,9 @@ FROM docker:dind as dind
 FROM alpine:3.9
 LABEL maintainer="Antons Kranga <anton@agilestacks.com>,Arkadi Shishlov <arkadi@agilestacks.com>"
 
-ARG VERSION="(unknown)"
+ARG IMAGE_VERSION="(unknown)"
 ARG TOOLBOX_VERSION="(unknown)"
 ARG HUB_CLI_VERSION="(unknown)"
-
-RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
 
 ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/google-cloud-sdk/bin
 
@@ -258,7 +256,6 @@ ENV HELM_INSTALL_DIR "/usr/local/bin"
 ENV USER             "root"
 ENV UID              "0"
 ENV GID              "0"
-ENV TOOLBOX_VERSION  "${VERSION}"
 
 ENV TF_PLUGIN_CACHE_DIR "/root/.terraform.d/plugin-cache"
 
@@ -334,11 +331,11 @@ RUN ln -s /usr/local/bin/terraform-v0.11 /usr/local/bin/terraform
 RUN groupadd -r docker && \
     usermod -aG docker $(/usr/bin/whoami)
 
-COPY etc/entrypoint  /usr/local/bin/entrypoint
-COPY --from=hub /usr/local/go/bin/linux/hub /usr/local/bin/hub
-
 VOLUME /var/lib/docker
-
 WORKDIR /workspace
-
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
+COPY etc/entrypoint /usr/local/bin/entrypoint
+
+RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
+ENV TOOLBOX_VERSION "${IMAGE_VERSION}"
+COPY --from=hub /usr/local/go/bin/linux/hub /usr/local/bin/hub
