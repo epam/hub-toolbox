@@ -3,6 +3,7 @@ RUN apk update && \
     apk add zip gzip unzip tar curl
 
 ARG DIRENV_VERSION="2.20.0"
+ARG ETCD_VERSION="3.3.13"
 ARG GOSU_VERSION="1.10"
 ARG HELM_VERSION="2.14.2"
 ARG HEPTIO_VERSION="1.13.7/2019-06-11"
@@ -79,19 +80,25 @@ WORKDIR /opt/tar
 RUN FILE=ks_${KSONNET_VERSION}_linux_amd64.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
     https://github.com/ksonnet/ksonnet/releases/download/v${KSONNET_VERSION}/$FILE && \
-    tar -xvzf $FILE ks_${KSONNET_VERSION}_linux_amd64/ks --strip-components=1 && \
+    tar xvzf $FILE ks_${KSONNET_VERSION}_linux_amd64/ks --strip-components=1 && \
     mv ks /usr/local/bin
+
+RUN FILE=etcd-v${ETCD_VERSION}-linux-amd64.tar.gz && \
+    test ! -f $FILE && curl -J -L -O \
+    https://github.com/etcd-io/etcd/releases/download/v${ETCD_VERSION}/$FILE && \
+    tar xvzf $FILE etcd-v${ETCD_VERSION}-linux-amd64/etcdctl --strip-components=1 && \
+    mv etcdctl /usr/local/bin
 
 RUN FILE=helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
     https://storage.googleapis.com/kubernetes-helm/$FILE && \
-    tar -xvzf $FILE linux-amd64/helm --strip-components=1 && \
+    tar xvzf $FILE linux-amd64/helm --strip-components=1 && \
     mv helm /usr/local/bin
 
 RUN FILE=openshift-origin-client-tools-v${OC_VERSION}-linux-64bit.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
     https://github.com/openshift/origin/releases/download/v$(echo ${OC_VERSION} | cut -d- -f1)/$FILE && \
-    tar -xvzf $FILE openshift-origin-client-tools-v${OC_VERSION}-linux-64bit/oc --strip-components=1 && \
+    tar xvzf $FILE openshift-origin-client-tools-v${OC_VERSION}-linux-64bit/oc --strip-components=1 && \
     mv oc /usr/local/bin
 
 WORKDIR /opt/zip
