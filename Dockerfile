@@ -307,6 +307,7 @@ RUN \
     openssl \
     pwgen \
     py2-virtualenv \
+    py3-virtualenv \
     python3 \
     rsync \
     sed \
