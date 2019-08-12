@@ -12,7 +12,7 @@ RUN \
 
 FROM docker.io/agilestacks/toolbox:latest
 
-ARG JAVA_VERSION="8.212.04-r0"
+ARG JAVA_VERSION="8.212.04-r1"
 
 ENV JAVA_HOME "/usr/lib/jvm/java-1.8-openjdk/jre"
 ENV PATH      "$PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin"
