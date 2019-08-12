@@ -243,7 +243,7 @@ RUN make get
 FROM docker:dind as dind
 
 ### Toolbox
-FROM alpine:3.9
+FROM alpine:3.10
 LABEL maintainer="Antons Kranga <anton@agilestacks.com>,Arkadi Shishlov <arkadi@agilestacks.com>"
 
 ARG IMAGE_VERSION="(unknown)"
