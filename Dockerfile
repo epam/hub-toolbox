@@ -232,11 +232,11 @@ RUN git init && \
 FROM golang:1.12-alpine as hub
 RUN apk update && apk upgrade && \
     apk add --no-cache git make sed
-COPY --from=hub-scm /workspace /usr/local/go
-WORKDIR /usr/local/go/src/hub
 RUN go get github.com/kardianos/govendor
+COPY --from=hub-scm /workspace /go
+WORKDIR /go/src/hub
 RUN /go/bin/govendor sync
-WORKDIR /usr/local/go
+WORKDIR /go
 RUN make get
 
 ### Dind
@@ -346,4 +346,4 @@ COPY etc/entrypoint /usr/local/bin/entrypoint
 
 RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
 ENV TOOLBOX_VERSION "${IMAGE_VERSION}"
-COPY --from=hub /usr/local/go/bin/linux/hub /usr/local/bin/hub
+COPY --from=hub /go/bin/linux/hub /usr/local/bin/hub
