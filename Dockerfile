@@ -195,7 +195,7 @@ RUN FILE=vault_${VAULT_VERSION}_linux_amd64.zip && \
 
 ### Checkout github
 FROM alpine/git:latest as ghub-scm
-ARG GHUB_VERSION="2.11.1"
+ARG GHUB_VERSION="2.12.3"
 WORKDIR /go/src/github.com/github
 RUN git clone -b v${GHUB_VERSION} https://github.com/github/hub.git
 
