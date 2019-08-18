@@ -233,9 +233,10 @@ FROM golang:1.12-alpine as hub
 RUN apk update && apk upgrade && \
     apk add --no-cache git make sed
 RUN go get github.com/kardianos/govendor
-COPY --from=hub-scm /workspace /go
+COPY --from=hub-scm /workspace/src/hub/vendor /go/src/hub/vendor
 WORKDIR /go/src/hub
 RUN /go/bin/govendor sync
+COPY --from=hub-scm /workspace /go
 WORKDIR /go
 RUN make get
 
