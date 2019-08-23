@@ -18,6 +18,13 @@ DOCKER_BUILD_OPTS :=
 
 deploy: build push
 
+pull-from:
+	docker pull alpine/git
+	docker pull golang:1.12-alpine
+	docker pull docker:dind
+	docker pull alpine:3.10
+.PHONY: pull-from
+
 build:
 	$(docker) build \
 		$(DOCKER_BUILD_OPTS) \
