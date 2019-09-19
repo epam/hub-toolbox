@@ -17,6 +17,7 @@ ARG TF_12_VERSION="0.12.7"
 ARG TINI_VERSION="0.16.1"
 ARG VAULT_VERSION="1.1.2"
 ARG YQ_VERSION="2.1.1"
+ARG ISTIOCTL_VERSION="1.3.0"
 
 ARG TF_PROVIDER_ARCHIVE_VERSION="1.2.2"
 ARG TF_PROVIDER_AWS_VERSION_0="1.41.0"
@@ -75,6 +76,10 @@ RUN FILE=stern && \
     test ! -f $FILE && curl -J -L -o $FILE \
     https://github.com/wercker/stern/releases/download/${STERN_VERSION}/stern_linux_amd64
 
+RUN FILE=mc && \
+    test ! -f $FILE && curl -J -L -O \
+    https://dl.min.io/client/$FILE/release/linux-amd64/$FILE
+
 WORKDIR /opt/tar
 
 RUN FILE=ks_${KSONNET_VERSION}_linux_amd64.tar.gz && \
@@ -100,6 +105,12 @@ RUN FILE=openshift-origin-client-tools-v${OC_VERSION}-linux-64bit.tar.gz && \
     https://github.com/openshift/origin/releases/download/v$(echo ${OC_VERSION} | cut -d- -f1)/$FILE && \
     tar xvzf $FILE openshift-origin-client-tools-v${OC_VERSION}-linux-64bit/oc --strip-components=1 && \
     mv oc /usr/local/bin
+
+RUN FILE=istio-${ISTIOCTL_VERSION}-linux.tar.gz && \
+    test ! -f $FILE && curl -J -L -O \
+    https://github.com/istio/istio/releases/download/${ISTIOCTL_VERSION}/$FILE && \
+    tar xvzf $FILE istio-${ISTIOCTL_VERSION}/bin/istioctl --strip-components=2 && \
+    mv istioctl /usr/local/bin
 
 WORKDIR /opt/zip
 
@@ -207,14 +218,6 @@ RUN apk update && apk upgrade && \
 WORKDIR /go/src/github.com/github/hub
 RUN script/build -o /go/bin/ghub
 
-### Minio client
-FROM golang:1.12-alpine as minio
-RUN apk update && apk upgrade && \
-    apk add --no-cache git bash make perl
-RUN go get -d github.com/minio/mc
-WORKDIR ${GOPATH}/src/github.com/minio/mc
-RUN make && mv mc /minio-client
-
 ### Checkout Hub CLI
 FROM alpine/git:latest as hub-scm
 ARG GITHUB_TOKEN=set-me-please
@@ -239,6 +242,17 @@ RUN /go/bin/govendor sync
 COPY --from=hub-scm /workspace /go
 WORKDIR /go
 RUN make get
+
+### Build Jsonnet
+FROM alpine:3.10 as jsonnet
+ARG JSONNET_VERSION="v0.13.0"
+WORKDIR /workspace
+RUN apk update && apk upgrade && \
+    apk add --no-cache git g++ make && \
+    git init && \
+    git remote add -f origin https://github.com/google/jsonnet && \
+    git pull --depth=1 origin ${JSONNET_VERSION} && \
+    make
 
 ### Dind
 FROM docker:dind as dind
@@ -278,7 +292,7 @@ COPY --from=blobs /usr/local/bin /usr/local/bin
 COPY --from=blobs /opt/tf-plugins ${TF_PLUGIN_CACHE_DIR}/linux_amd64/
 COPY --from=blobs /opt/tf-custom-plugins /root/.terraform.d/plugins/linux_amd64/
 COPY --from=ghub  /go/bin/ghub /usr/local/bin/ghub
-COPY --from=minio /minio-client /usr/local/bin/mc
+COPY --from=jsonnet /workspace/jsonnet /usr/local/bin
 
 COPY etc/wrapdocker  /usr/local/bin/wrapdocker
 COPY etc/dmsetup     /usr/local/bin/dmsetup
@@ -302,6 +316,8 @@ RUN \
     iptables \
     jq \
     less \
+    libgcc \
+    libstdc++ \
     lxc \
     make \
     openssh \
