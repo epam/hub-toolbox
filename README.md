@@ -20,14 +20,19 @@ The image contains following tools:
 - Direnv
 - Docker in Docker
 - Git and GitHub CLI (ghub)
+- Gnupg
+- Gosu
+- iptables
 - Helm
 - JQ and YQ
 - Kompose
 - Ksonnet
 - Kubectl
-- Minio client
+- Make
+- Minio client (mc)
 - OpenShift CLI
-- Python 2 with virtualenv and Python 3
+- OpenSSL
+- Python 3 with virtualenv
 - Stern
 - Terraform 0.9 and 0.11 with pre-cached set of provider plug-ins
 - Tini init
