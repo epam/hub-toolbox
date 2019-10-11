@@ -7,6 +7,7 @@ ARG ETCD_VERSION="3.3.15"
 ARG GOSU_VERSION="1.10"
 ARG HELM_VERSION="2.14.3"
 ARG HEPTIO_VERSION="1.14.6/2019-08-22"
+ARG KFCTL_VERSION="0.6.2"
 ARG KOMPOSE_VERSION="1.9.0"
 ARG KSONNET_VERSION="0.13.1"
 ARG KUBECTL_VERSION="1.14.7"
@@ -17,7 +18,7 @@ ARG TF_12_VERSION="0.12.7"
 ARG TINI_VERSION="0.16.1"
 ARG VAULT_VERSION="1.1.2"
 ARG YQ_VERSION="2.1.1"
-ARG ISTIOCTL_VERSION="1.3.0"
+ARG ISTIOCTL_VERSION="1.3.2"
 
 ARG TF_PROVIDER_ARCHIVE_VERSION="1.2.2"
 ARG TF_PROVIDER_AWS_VERSION_0="1.41.0"
@@ -87,6 +88,12 @@ RUN FILE=ks_${KSONNET_VERSION}_linux_amd64.tar.gz && \
     https://github.com/ksonnet/ksonnet/releases/download/v${KSONNET_VERSION}/$FILE && \
     tar xvzf $FILE ks_${KSONNET_VERSION}_linux_amd64/ks --strip-components=1 && \
     mv ks /usr/local/bin
+
+RUN FILE=kfctl_v${KFCTL_VERSION}_linux.tar.gz && \
+    test ! -f $FILE && curl -J -L -O \
+    https://github.com/kubeflow/kubeflow/releases/download/v${KFCTL_VERSION}/$FILE && \
+    tar xvzf $FILE ./kfctl && \
+    mv kfctl /usr/local/bin
 
 RUN FILE=etcd-v${ETCD_VERSION}-linux-amd64.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
