@@ -218,7 +218,7 @@ WORKDIR /go/src/github.com/github
 RUN git clone -b v${GHUB_VERSION} https://github.com/github/hub.git
 
 ### Build github
-FROM golang:1.12-alpine as ghub
+FROM golang:1.13-alpine as ghub
 COPY --from=ghub-scm /go /go
 RUN apk update && apk upgrade && \
     apk add --no-cache git bash
@@ -239,7 +239,7 @@ RUN git init && \
     git checkout $HUB_CLI_VERSION
 
 ### Build Hub CLI
-FROM golang:1.12-alpine as hub
+FROM golang:1.13-alpine as hub
 RUN apk update && apk upgrade && \
     apk add --no-cache git make sed
 RUN go get github.com/kardianos/govendor
