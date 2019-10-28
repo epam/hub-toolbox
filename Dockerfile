@@ -266,11 +266,14 @@ FROM docker:dind as dind
 
 ### Toolbox
 FROM alpine:3.10
-LABEL maintainer="Antons Kranga <anton@agilestacks.com>,Arkadi Shishlov <arkadi@agilestacks.com>"
-
+ARG FULLNAME="Agile Stacks"
 ARG IMAGE_VERSION="(unknown)"
 ARG TOOLBOX_VERSION="(unknown)"
 ARG HUB_CLI_VERSION="(unknown)"
+
+LABEL maintainer="${FULLNAME} <support@agilestacks.com>"
+LABEL toolbox="${TOOLBOX_VERSION}"
+LABEL hub="${HUB_CLI_VERSION}"
 
 ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/google-cloud-sdk/bin
 
