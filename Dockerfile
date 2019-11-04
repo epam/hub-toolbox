@@ -315,6 +315,7 @@ RUN \
     apk add --no-cache \
     bash \
     bc \
+    bind-tools \
     ca-certificates \
     curl \
     e2fsprogs \
