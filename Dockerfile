@@ -72,7 +72,6 @@ RUN FILE=yq && \
     test ! -f $FILE && curl -J -L -o $FILE \
     https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64
 
-
 RUN FILE=stern && \
     test ! -f $FILE && curl -J -L -o $FILE \
     https://github.com/wercker/stern/releases/download/${STERN_VERSION}/stern_linux_amd64
@@ -80,6 +79,10 @@ RUN FILE=stern && \
 RUN FILE=mc && \
     test ! -f $FILE && curl -J -L -O \
     https://dl.min.io/client/$FILE/release/linux-amd64/$FILE
+
+RUN FILE=skaffold && \
+    test ! -f $FILE && curl -J -L -o $FILE \
+    https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
 
 WORKDIR /opt/tar
 
