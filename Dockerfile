@@ -1,13 +1,13 @@
 FROM alpine:3.10 as blobs
 RUN apk update && \
-    apk add zip gzip unzip tar curl
+    apk add zip gzip unzip tar curl jq
 
 ARG DIRENV_VERSION="2.20.0"
 ARG ETCD_VERSION="3.3.18"
 ARG GOSU_VERSION="1.10"
 ARG HELM_VERSION="2.16.1"
 ARG HEPTIO_VERSION="1.14.6/2019-08-22"
-ARG KFCTL_VERSION="0.6.2"
+ARG KFCTL_VERSION="v0.7.1"
 ARG KOMPOSE_VERSION="1.9.0"
 ARG KSONNET_VERSION="0.13.1"
 ARG KUBECTL_VERSION="1.16.3"
@@ -17,7 +17,7 @@ ARG TF_11_VERSION="0.11.14"
 ARG TF_12_VERSION="0.12.18"
 ARG TINI_VERSION="0.16.1"
 ARG VAULT_VERSION="1.2.4"
-ARG YQ_VERSION="2.1.1"
+ARG YQ_VERSION="2.4.1"
 ARG ISTIOCTL_VERSION="1.3.3"
 
 ARG TF_PROVIDER_ARCHIVE_VERSION="1.2.2"
@@ -92,10 +92,11 @@ RUN FILE=ks_${KSONNET_VERSION}_linux_amd64.tar.gz && \
     tar xvzf $FILE ks_${KSONNET_VERSION}_linux_amd64/ks --strip-components=1 && \
     mv ks /usr/local/bin
 
-RUN FILE=kfctl_v${KFCTL_VERSION}_linux.tar.gz && \
-    test ! -f $FILE && curl -J -L -O \
-    https://github.com/kubeflow/kubeflow/releases/download/v${KFCTL_VERSION}/$FILE && \
-    tar xvzf $FILE ./kfctl && \
+RUN DOWNLOAD_URL="$(curl -s https://api.github.com/repos/kubeflow/kfctl/releases/tags/${KFCTL_VERSION} \
+    | jq -rM '.assets[] | select(.name | contains("linux")).browser_download_url')" \
+    FILE="$(basename $DOWNLOAD_URL)" && \
+    test ! -f $FILE && curl -JLO "${DOWNLOAD_URL}"; \
+    tar xvzf "${FILE}" ./kfctl && \
     mv kfctl /usr/local/bin
 
 RUN FILE=etcd-v${ETCD_VERSION}-linux-amd64.tar.gz && \
@@ -254,15 +255,10 @@ WORKDIR /go
 RUN make get
 
 ### Build Jsonnet
-FROM alpine:3.10 as jsonnet
-ARG JSONNET_VERSION="v0.13.0"
-WORKDIR /workspace
+FROM golang:1.13-alpine as jsonnet
 RUN apk update && apk upgrade && \
-    apk add --no-cache git g++ make && \
-    git init && \
-    git remote add -f origin https://github.com/google/jsonnet && \
-    git pull --depth=1 origin ${JSONNET_VERSION} && \
-    make
+    apk add --no-cache git
+RUN go get github.com/google/go-jsonnet/cmd/jsonnet
 
 ### Dind
 FROM docker:dind as dind
@@ -305,7 +301,7 @@ COPY --from=blobs /usr/local/bin /usr/local/bin
 COPY --from=blobs /opt/tf-plugins ${TF_PLUGIN_CACHE_DIR}/linux_amd64/
 COPY --from=blobs /opt/tf-custom-plugins /root/.terraform.d/plugins/linux_amd64/
 COPY --from=ghub  /go/bin/ghub /usr/local/bin/ghub
-COPY --from=jsonnet /workspace/jsonnet /usr/local/bin
+COPY --from=jsonnet /go/bin/jsonnet /usr/local/bin
 
 COPY etc/wrapdocker  /usr/local/bin/wrapdocker
 COPY etc/dmsetup     /usr/local/bin/dmsetup
