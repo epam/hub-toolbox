@@ -336,6 +336,7 @@ RUN \
     py2-virtualenv \
     py3-virtualenv \
     python3 \
+    strace \
     rsync \
     sed \
     shadow \
