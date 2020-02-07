@@ -58,8 +58,9 @@ else
     export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
     if ! test -d $HOME/.terraform.d/plugin-cache/linux_amd64; then
         mkdir -p $HOME/.terraform.d/plugin-cache/linux_amd64
-        chown $UID:$GID $HOME/.terraform.d/plugin-cache/linux_amd64
-        ln /root/.terraform.d/plugin-cache/linux_amd64/* $HOME/.terraform.d/plugin-cache/linux_amd64/
+        ln /root/.terraform.d/plugin-cache/linux_amd64/* $HOME/.terraform.d/plugin-cache/linux_amd64/ 2>/dev/null ||
+            cp /root/.terraform.d/plugin-cache/linux_amd64/* $HOME/.terraform.d/plugin-cache/linux_amd64/
+        chown -R $UID:$GID $HOME/.terraform.d
     fi
     # if ! test -d $HOME/.terraform.d/plugins/linux_amd64; then
     #     mkdir -p $HOME/.terraform.d/plugins/linux_amd64
