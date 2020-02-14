@@ -261,6 +261,11 @@ COPY --from=hub-scm /workspace /go
 WORKDIR /go
 RUN make get
 
+### Checkout hub-extensions
+FROM alpine/git:latest as hub-extensions
+WORKDIR /tmp
+RUN git clone https://github.com/agilestacks/hub-extensions.git
+
 ### Build Jsonnet
 FROM golang:1.13-alpine as jsonnet
 RUN apk update && apk upgrade && \
@@ -337,6 +342,8 @@ RUN \
     libstdc++ \
     lxc \
     make \
+    nodejs \
+    npm \
     openssh \
     openssl \
     pwgen \
@@ -375,7 +382,6 @@ RUN groupadd -r docker && \
     usermod -aG docker $(/usr/bin/whoami)
 
 VOLUME /var/lib/docker
-WORKDIR /workspace
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
 COPY etc/entrypoint /usr/local/bin/entrypoint
 COPY etc/virtualenv-2.7 /usr/local/bin/virtualenv-2.7
@@ -383,3 +389,8 @@ COPY etc/virtualenv-2.7 /usr/local/bin/virtualenv-2.7
 RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
 ENV TOOLBOX_VERSION "${IMAGE_VERSION}"
 COPY --from=hub /go/bin/linux/hub /usr/local/bin/hub
+COPY --from=hub-extensions /tmp/hub-extensions /usr/local/share/hub-extensions
+WORKDIR /usr/local/share/hub-extensions
+RUN npm install
+
+WORKDIR /workspace
