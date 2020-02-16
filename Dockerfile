@@ -5,7 +5,8 @@ RUN apk update && \
 ARG DIRENV_VERSION="2.20.0"
 ARG ETCD_VERSION="3.3.18"
 ARG GOSU_VERSION="1.10"
-ARG HELM_VERSION="2.16.3"
+ARG HELM2_VERSION="2.16.3"
+ARG HELM3_VERSION="3.1.0"
 ARG HEPTIO_VERSION="1.14.6/2019-08-22"
 ARG KFCTL_VERSION="v0.7.1"
 ARG KOMPOSE_VERSION="1.9.0"
@@ -105,11 +106,17 @@ RUN FILE=etcd-v${ETCD_VERSION}-linux-amd64.tar.gz && \
     tar xvzf $FILE etcd-v${ETCD_VERSION}-linux-amd64/etcdctl --strip-components=1 && \
     mv etcdctl /usr/local/bin
 
-RUN FILE=helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
+RUN FILE=helm-v${HELM2_VERSION}-linux-amd64.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
     https://storage.googleapis.com/kubernetes-helm/$FILE && \
     tar xvzf $FILE linux-amd64/helm --strip-components=1 && \
     mv helm /usr/local/bin
+
+RUN FILE=helm-v${HELM3_VERSION}-linux-amd64.tar.gz && \
+  test ! -f $FILE && curl -JLO \
+  https://get.helm.sh/$FILE && \
+  tar xvzf $FILE linux-amd64/helm --strip-components=1 && \
+  mv helm /usr/local/bin/helm3
 
 RUN FILE=openshift-origin-client-tools-v${OC_VERSION}-linux-64bit.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
