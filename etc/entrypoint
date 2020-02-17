@@ -18,11 +18,6 @@ if test -n "$PS1"; then
     echo "  interactive mode ${SHELL##*/}"
 fi
 
-if echo "${ARGS##*/}" | grep -q "bash"; then
-    echo "  configure direnv"
-    ARGS="$ARGS --rcfile /opt/bashrc"
-fi
-
 if test -z "$TMPDIR"; then
     export TMPDIR=/tmp
 fi

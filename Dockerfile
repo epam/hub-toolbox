@@ -319,7 +319,7 @@ COPY etc/wrapdocker  /usr/local/bin/wrapdocker
 COPY etc/dmsetup     /usr/local/bin/dmsetup
 COPY etc/terraformrc /root/.terraformrc
 COPY etc/terraformrc /usr/local/share/.terraformrc
-COPY etc/bashrc      /opt/bashrc
+COPY etc/bashrc      /etc/bashrc
 
 RUN \
     apk update && apk upgrade && \
@@ -394,3 +394,5 @@ WORKDIR /usr/local/share/hub-extensions
 RUN npm install
 
 WORKDIR /workspace
+
+CMD ["/bin/bash", "--rcfile", "/etc/bashrc"]
