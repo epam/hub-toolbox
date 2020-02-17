@@ -276,7 +276,7 @@ RUN go get github.com/google/go-jsonnet/cmd/jsonnet
 FROM docker:dind as dind
 
 ### Toolbox
-FROM alpine:3.10
+FROM alpine:3.11
 ARG FULLNAME="Agile Stacks"
 ARG IMAGE_VERSION="(unknown)"
 ARG TOOLBOX_VERSION="(unknown)"
@@ -347,8 +347,8 @@ RUN \
     openssh \
     openssl \
     pwgen \
-    py2-virtualenv \
     py3-virtualenv \
+    python2 \
     python3 \
     strace \
     rsync \
