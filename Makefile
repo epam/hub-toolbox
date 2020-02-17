@@ -27,7 +27,7 @@ pull-from:
 	docker pull alpine/git
 	docker pull golang:1.13-alpine
 	docker pull docker:dind
-	docker pull alpine:3.10
+	docker pull alpine:3.11
 .PHONY: pull-from
 
 build:

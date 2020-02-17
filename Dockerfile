@@ -1,4 +1,4 @@
-FROM alpine:3.10 as blobs
+FROM alpine:3.11 as blobs
 RUN apk update && \
     apk add zip gzip unzip tar curl jq
 
