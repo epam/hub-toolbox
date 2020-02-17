@@ -2,7 +2,16 @@
 
 IMAGE           ?= agilestacks/toolbox
 TOOLBOX_VERSION := $(shell git rev-parse HEAD | cut -c-7)
-HUB_CLI_VERSION := $(shell (git ls-remote -q git@github.com:agilestacks/automation-hub-cli.git master || git ls-remote -q https://github.com/agilestacks/automation-hub-cli.git master) | cut -c-7)
+HUB_CLI_VERSION := $(shell \
+	git ls-remote -q git@github.com:agilestacks/automation-hub-cli.git master 2>/dev/null \
+	|| git ls-remote -q https://github.com/agilestacks/automation-hub-cli.git master 2>/dev/null \
+	| cut -c-7 \
+)
+
+ifeq ($(HUB_CLI_VERSION),)
+$(error HUB_CLI_VERSION cannot be empty)
+endif
+
 IMAGE_VERSION   ?= $(TOOLBOX_VERSION)-$(HUB_CLI_VERSION)
 IMAGE_TAG       ?= latest
 USER_FULLNAME   ?= $(shell id -un)
