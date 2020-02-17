@@ -2,7 +2,7 @@ FROM alpine:3.10 as blobs
 RUN apk update && \
     apk add zip gzip unzip tar curl jq
 
-ARG DIRENV_VERSION="2.20.0"
+ARG DIRENV_VERSION="2.21.2"
 ARG ETCD_VERSION="3.3.18"
 ARG GOSU_VERSION="1.10"
 ARG HELM2_VERSION="2.16.3"
