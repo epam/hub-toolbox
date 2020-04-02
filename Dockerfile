@@ -26,7 +26,8 @@ ARG TF_PROVIDER_AWS_VERSION_0="2.43.0"
 ARG TF_PROVIDER_AWS_VERSION_1="1.60.0"
 ARG TF_PROVIDER_AWS_VERSION_2="2.14.0"
 ARG TF_PROVIDER_AWS_VERSION_3="2.49.0"
-ARG TF_PROVIDER_AZURE_VERSION="2.2.0"
+ARG TF_PROVIDER_AZURE_VERSION_0="1.43.0"
+ARG TF_PROVIDER_AZURE_VERSION_1="2.2.0"
 ARG TF_PROVIDER_EXTERNAL_VERSION="1.1.2"
 ARG TF_PROVIDER_GOOGLE_VERSION="2.20.1"
 ARG TF_PROVIDER_IGNITION_VERSION="1.1.0"
@@ -168,9 +169,14 @@ RUN FILE=terraform-provider-aws_${TF_PROVIDER_AWS_VERSION_3}_linux_amd64.zip && 
   https://releases.hashicorp.com/terraform-provider-aws/${TF_PROVIDER_AWS_VERSION_3}/$FILE && \
   unzip $FILE -d /opt/tf-plugins
 
-RUN FILE=terraform-provider-azurerm_${TF_PROVIDER_AZURE_VERSION}_linux_amd64.zip && \
+RUN FILE=terraform-provider-azurerm_${TF_PROVIDER_AZURE_VERSION_0}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
-    https://releases.hashicorp.com/terraform-provider-azurerm/${TF_PROVIDER_AZURE_VERSION}/$FILE && \
+    https://releases.hashicorp.com/terraform-provider-azurerm/${TF_PROVIDER_AZURE_VERSION_0}/$FILE && \
+    unzip $FILE -d /opt/tf-plugins
+
+RUN FILE=terraform-provider-azurerm_${TF_PROVIDER_AZURE_VERSION_1}_linux_amd64.zip && \
+    test ! -f $FILE && curl -J -L -O \
+    https://releases.hashicorp.com/terraform-provider-azurerm/${TF_PROVIDER_AZURE_VERSION_1}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
 RUN FILE=terraform-provider-external_${TF_PROVIDER_EXTERNAL_VERSION}_linux_amd64.zip && \
