@@ -354,6 +354,7 @@ RUN \
     libstdc++ \
     lxc \
     make \
+    nano \
     nodejs \
     npm \
     openssh \
