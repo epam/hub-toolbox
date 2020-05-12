@@ -398,6 +398,7 @@ VOLUME /var/lib/docker
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
 COPY etc/entrypoint /usr/local/bin/entrypoint
 COPY etc/virtualenv-2.7 /usr/local/bin/virtualenv-2.7
+RUN chmod go+rx /root
 
 RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
 ENV TOOLBOX_VERSION "${IMAGE_VERSION}"
