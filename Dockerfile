@@ -250,11 +250,10 @@ RUN script/build -o /go/bin/ghub
 
 ### Checkout Hub CLI
 FROM alpine/git:latest as hub-scm
-ARG GITHUB_TOKEN=set-me-please
 ARG HUB_CLI_VERSION="(unknown)"
 WORKDIR /workspace
 RUN git init && \
-    git remote add -f origin https://${GITHUB_TOKEN}@github.com/agilestacks/automation-hub-cli.git && \
+    git remote add -f origin https://github.com/agilestacks/automation-hub-cli.git && \
     git config core.sparseCheckout true && \
     echo "src" >> .git/info/sparse-checkout && \
     echo "Makefile" >> .git/info/sparse-checkout && \

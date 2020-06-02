@@ -14,15 +14,10 @@ endif
 IMAGE_VERSION   ?= $(TOOLBOX_VERSION)-$(HUB_CLI_VERSION)
 IMAGE_TAG       ?= latest
 USER_FULLNAME   ?= $(shell id -un)
-GITHUB_API_TOKEN?= $(GITHUB_TOKEN)
 REGISTRY_PASS   ?= ~/.docker/agilestacks.txt
 
 ifeq ($(USER_FULLNAME),)
 $(error Please supply USER_FULLNAME with your full name (example: "USER_FULLNAME=John Doe"))
-endif
-
-ifeq ($(GITHUB_API_TOKEN),)
-$(error Please supply GITHUB_API_TOKEN)
 endif
 
 docker ?= docker
@@ -42,7 +37,6 @@ build:
 	$(docker) build \
 		$(DOCKER_BUILD_OPTS) \
 		--build-arg="FULLNAME=$(USER_FULLNAME)"\
-		--build-arg="GITHUB_TOKEN=$(GITHUB_API_TOKEN)" \
 		--build-arg="IMAGE_VERSION=$(IMAGE_VERSION)" \
 		--build-arg="TOOLBOX_VERSION=$(TOOLBOX_VERSION)" \
 		--build-arg="HUB_CLI_VERSION=$(HUB_CLI_VERSION)" \
