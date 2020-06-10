@@ -253,23 +253,18 @@ FROM alpine/git:latest as hub-scm
 ARG HUB_CLI_VERSION="(unknown)"
 WORKDIR /workspace
 RUN git init && \
-    git remote add -f origin https://github.com/agilestacks/automation-hub-cli.git && \
-    git config core.sparseCheckout true && \
-    echo "src" >> .git/info/sparse-checkout && \
-    echo "Makefile" >> .git/info/sparse-checkout && \
+    git remote add -f origin https://github.com/agilestacks/hub.git && \
     git pull --depth=1 origin master && \
     git checkout $HUB_CLI_VERSION
 
 ### Build Hub CLI
-FROM golang:1.13-alpine as hub
+FROM golang:1.14-alpine as hub
 RUN apk update && apk upgrade && \
     apk add --no-cache git make sed
-RUN go get github.com/kardianos/govendor
-COPY --from=hub-scm /workspace/src/hub/vendor /go/src/hub/vendor
 WORKDIR /go/src/hub
-RUN /go/bin/govendor sync
-COPY --from=hub-scm /workspace /go
-WORKDIR /go
+COPY --from=hub-scm /workspace/go.sum /workspace/go.mod ./
+RUN go mod download
+COPY --from=hub-scm /workspace ./
 RUN make get
 
 ### Checkout hub-extensions
