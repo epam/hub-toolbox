@@ -397,9 +397,8 @@ RUN chmod go+rx /root
 RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
 ENV TOOLBOX_VERSION "${IMAGE_VERSION}"
 COPY --from=hub /go/src/hub/bin/linux/hub /usr/local/bin/hub
-COPY --from=hub-extensions /tmp/hub-extensions /usr/local/share/hub-extensions
-WORKDIR /usr/local/share/hub-extensions
-RUN npm install
+COPY --from=hub-extensions /tmp/hub-extensions /usr/local/share/hub
+RUN cd /usr/local/share/hub && ./post-install
 
 WORKDIR /workspace
 
