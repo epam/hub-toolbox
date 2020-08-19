@@ -2,16 +2,14 @@
 
 IMAGE           ?= agilestacks/toolbox
 TOOLBOX_VERSION := $(shell git rev-parse HEAD | cut -c-7)
-HUB_CLI_VERSION := $(shell \
-	(git ls-remote -q git@github.com:agilestacks/automation-hub-cli.git master \
-		|| git ls-remote -q https://github.com/agilestacks/automation-hub-cli.git master) 2>/dev/null \
-	| cut -c-7)
+HUB_CLI_VERSION            := $(shell git ls-remote -q https://github.com/agilestacks/hub.git master 2>/dev/null | cut -c-7)
+HUB_CLI_EXTENSIONS_VERSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-extensions.git master 2>/dev/null | cut -c-7)
 
 ifeq ($(HUB_CLI_VERSION),)
 $(error HUB_CLI_VERSION cannot be empty)
 endif
 
-IMAGE_VERSION   ?= $(TOOLBOX_VERSION)-$(HUB_CLI_VERSION)
+IMAGE_VERSION   ?= $(TOOLBOX_VERSION)-$(HUB_CLI_VERSION)-$(HUB_CLI_EXTENSIONS_VERSION)
 IMAGE_TAG       ?= latest
 USER_FULLNAME   ?= $(shell id -un)
 REGISTRY_PASS   ?= ~/.docker/agilestacks.txt
@@ -40,6 +38,7 @@ build:
 		--build-arg="IMAGE_VERSION=$(IMAGE_VERSION)" \
 		--build-arg="TOOLBOX_VERSION=$(TOOLBOX_VERSION)" \
 		--build-arg="HUB_CLI_VERSION=$(HUB_CLI_VERSION)" \
+		--build-arg="HUB_CLI_EXTENSIONS_VERSION=$(HUB_CLI_EXTENSIONS_VERSION)" \
 		--tag $(IMAGE):$(IMAGE_VERSION) \
 		--tag $(IMAGE):$(IMAGE_TAG) .
 .PHONY: build

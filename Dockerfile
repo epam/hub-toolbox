@@ -267,10 +267,13 @@ RUN go mod download
 COPY --from=hub-scm /workspace ./
 RUN make get
 
-### Checkout hub-extensions
+### Checkout Hub CLI Extensions
 FROM alpine/git:latest as hub-extensions
+ARG HUB_CLI_EXTENSIONS_VERSION="(unknown)"
 WORKDIR /tmp
-RUN git clone https://github.com/agilestacks/hub-extensions.git
+RUN git clone https://github.com/agilestacks/hub-extensions.git && \
+    cd hub-extensions && \
+    git checkout $HUB_CLI_EXTENSIONS_VERSION
 
 ### Build Jsonnet
 FROM golang:1.13-alpine as jsonnet
@@ -287,10 +290,12 @@ ARG FULLNAME="Agile Stacks"
 ARG IMAGE_VERSION="(unknown)"
 ARG TOOLBOX_VERSION="(unknown)"
 ARG HUB_CLI_VERSION="(unknown)"
+ARG HUB_CLI_EXTENSIONS_VERSION="(unknown)"
 
 LABEL maintainer="${FULLNAME} <support@agilestacks.com>"
 LABEL toolbox="${TOOLBOX_VERSION}"
 LABEL hub="${HUB_CLI_VERSION}"
+LABEL extensions="${HUB_CLI_EXTENSIONS_VERSION}"
 
 ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/google-cloud-sdk/bin
 
@@ -394,7 +399,7 @@ COPY etc/entrypoint /usr/local/bin/entrypoint
 COPY etc/virtualenv-2.7 /usr/local/bin/virtualenv-2.7
 RUN chmod go+rx /root
 
-RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}" > /etc/version
+RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}, extensions ${HUB_CLI_EXTENSIONS_VERSION}" > /etc/version
 ENV TOOLBOX_VERSION "${IMAGE_VERSION}"
 COPY --from=hub /go/src/hub/bin/linux/hub /usr/local/bin/hub
 COPY --from=hub-extensions /tmp/hub-extensions /usr/local/share/hub
