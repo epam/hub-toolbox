@@ -12,6 +12,7 @@ ARG KFCTL_VERSION="v1.0.2"
 ARG KOMPOSE_VERSION="1.9.0"
 ARG KSONNET_VERSION="0.13.1"
 ARG KUBECTL_VERSION="1.17.11"
+ARG EKSCTL_VERSION="0.26.0"
 ARG OC_VERSION="3.11.0-0cbc58b"
 ARG STERN_VERSION="1.10.0"
 ARG TF_11_VERSION="0.11.14"
@@ -119,6 +120,12 @@ RUN FILE=helm-v${HELM3_VERSION}-linux-amd64.tar.gz && \
   https://get.helm.sh/$FILE && \
   tar xvzf $FILE linux-amd64/helm --strip-components=1 && \
   mv helm /usr/local/bin/helm3
+
+RUN FILE=eksctl_Linux_amd64.tar.gz && \
+  test ! -f $FILE && curl -JLO \
+  https://github.com/weaveworks/eksctl/releases/download/${EKSCTL_VERSION}/$FILE && \
+  tar xvzf $FILE eksctl && \
+  mv eksctl /usr/local/bin
 
 RUN FILE=openshift-origin-client-tools-v${OC_VERSION}-linux-64bit.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
