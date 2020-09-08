@@ -9,18 +9,15 @@ ARG HELM2_VERSION="2.16.10"
 ARG HELM3_VERSION="3.3.1"
 ARG HEPTIO_VERSION="1.15.10/2020-02-22"
 ARG KFCTL_VERSION="v1.0.2"
-ARG KOMPOSE_VERSION="1.9.0"
-ARG KSONNET_VERSION="0.13.1"
 ARG KUBECTL_VERSION="1.17.11"
-ARG EKSCTL_VERSION="0.26.0"
 ARG OC_VERSION="3.11.0-0cbc58b"
-ARG STERN_VERSION="1.10.0"
 ARG TF_11_VERSION="0.11.14"
 ARG TF_12_VERSION="0.12.28"
 ARG TINI_VERSION="0.16.1"
 ARG VAULT_VERSION="1.3.2"
-ARG YQ_VERSION="2.4.1"
+ARG YQ_VERSION="3.3.2"
 ARG ISTIOCTL_VERSION="1.5.2"
+ARG EKSCTL_VERSION="0.27.0"
 
 ARG TF_PROVIDER_ARCHIVE_VERSION="1.2.2"
 ARG TF_PROVIDER_AWS_VERSION_0="2.61.0"
@@ -56,10 +53,6 @@ RUN FILE=tini && \
     test ! -f $FILE && curl -J -L -o $FILE \
     https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-static-amd64
 
-RUN FILE=kompose && \
-    test ! -f $FILE && curl -J -L -o $FILE \
-    https://github.com/kubernetes/kompose/releases/download/v${KOMPOSE_VERSION}/kompose-linux-amd64
-
 RUN FILE=gosu && \
     test ! -f $FILE && curl -J -L -o $FILE \
     https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64
@@ -76,10 +69,6 @@ RUN FILE=yq && \
     test ! -f $FILE && curl -J -L -o $FILE \
     https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64
 
-RUN FILE=stern && \
-    test ! -f $FILE && curl -J -L -o $FILE \
-    https://github.com/wercker/stern/releases/download/${STERN_VERSION}/stern_linux_amd64
-
 RUN FILE=mc && \
     test ! -f $FILE && curl -J -L -O \
     https://dl.min.io/client/$FILE/release/linux-amd64/$FILE
@@ -89,12 +78,6 @@ RUN FILE=skaffold && \
     https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
 
 WORKDIR /opt/tar
-
-RUN FILE=ks_${KSONNET_VERSION}_linux_amd64.tar.gz && \
-    test ! -f $FILE && curl -J -L -O \
-    https://github.com/ksonnet/ksonnet/releases/download/v${KSONNET_VERSION}/$FILE && \
-    tar xvzf $FILE ks_${KSONNET_VERSION}_linux_amd64/ks --strip-components=1 && \
-    mv ks /usr/local/bin
 
 RUN DOWNLOAD_URL="$(curl -s https://api.github.com/repos/kubeflow/kfctl/releases/tags/${KFCTL_VERSION} \
     | jq -rM '.assets[] | select(.name | contains("linux")).browser_download_url')" \
@@ -138,6 +121,12 @@ RUN FILE=istio-${ISTIOCTL_VERSION}-linux.tar.gz && \
     https://github.com/istio/istio/releases/download/${ISTIOCTL_VERSION}/$FILE && \
     tar xvzf $FILE istio-${ISTIOCTL_VERSION}/bin/istioctl --strip-components=2 && \
     mv istioctl /usr/local/bin
+
+RUN FILE=eksctl_Linux_amd64.tar.gz && \
+    test ! -f $FILE && curl -JLO \
+    https://github.com/weaveworks/eksctl/releases/download/${EKSCTL_VERSION}/$FILE && \
+    tar xvzf $FILE eksctl && \
+    mv eksctl /usr/local/bin
 
 WORKDIR /opt/zip
 
@@ -365,6 +354,7 @@ RUN \
     npm \
     openssh \
     openssl \
+    parallel \
     pwgen \
     py3-virtualenv \
     python2 \
