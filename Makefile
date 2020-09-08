@@ -31,16 +31,21 @@ pull-from:
 	docker pull alpine:3.11
 .PHONY: pull-from
 
+# DD_CLIENT_API_KEY is optional
 build:
-	$(docker) build \
+	ddkey_file=$$(mktemp); \
+	echo "$$DD_CLIENT_API_KEY" > $$ddkey_file; \
+	DOCKER_BUILDKIT=1 $(docker) build \
 		$(DOCKER_BUILD_OPTS) \
 		--build-arg="FULLNAME=$(USER_FULLNAME)"\
 		--build-arg="IMAGE_VERSION=$(IMAGE_VERSION)" \
 		--build-arg="TOOLBOX_VERSION=$(TOOLBOX_VERSION)" \
 		--build-arg="HUB_CLI_VERSION=$(HUB_CLI_VERSION)" \
 		--build-arg="HUB_CLI_EXTENSIONS_VERSION=$(HUB_CLI_EXTENSIONS_VERSION)" \
+		--secret id=ddkey,src=$$ddkey_file \
 		--tag $(IMAGE):$(IMAGE_VERSION) \
-		--tag $(IMAGE):$(IMAGE_TAG) .
+		--tag $(IMAGE):$(IMAGE_TAG) .; \
+	rm $$ddkey_file
 .PHONY: build
 
 build-no-cache:

@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1.0-experimental
 FROM alpine:3.11 as blobs
 RUN apk update && \
     apk add zip gzip unzip tar curl jq
@@ -255,7 +256,8 @@ WORKDIR /go/src/hub
 COPY --from=hub-scm /workspace/go.sum /workspace/go.mod ./
 RUN go mod download
 COPY --from=hub-scm /workspace ./
-RUN make get
+RUN --mount=type=secret,id=ddkey \
+    make get DD_CLIENT_API_KEY=$(cat /run/secrets/ddkey)
 
 ### Checkout Hub CLI Extensions
 FROM alpine/git:latest as hub-extensions
