@@ -104,12 +104,6 @@ RUN FILE=helm-v${HELM3_VERSION}-linux-amd64.tar.gz && \
   tar xvzf $FILE linux-amd64/helm --strip-components=1 && \
   mv helm /usr/local/bin/helm3
 
-RUN FILE=eksctl_Linux_amd64.tar.gz && \
-  test ! -f $FILE && curl -JLO \
-  https://github.com/weaveworks/eksctl/releases/download/${EKSCTL_VERSION}/$FILE && \
-  tar xvzf $FILE eksctl && \
-  mv eksctl /usr/local/bin
-
 RUN FILE=openshift-origin-client-tools-v${OC_VERSION}-linux-64bit.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
     https://github.com/openshift/origin/releases/download/v$(echo ${OC_VERSION} | cut -d- -f1)/$FILE && \
