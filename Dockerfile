@@ -398,6 +398,7 @@ COPY --from=hub /go/src/hub/bin/linux/hub /usr/local/bin/hub
 COPY --from=hub-extensions /tmp/hub-extensions /usr/local/share/hub
 RUN cd /usr/local/share/hub && ./post-install
 
+RUN mkdir /workspace
 WORKDIR /workspace
 
 CMD ["/bin/bash", "--rcfile", "/etc/bashrc"]
