@@ -18,6 +18,16 @@ ifeq (,$(USER_FULLNAME))
 $(error Please supply USER_FULLNAME with your full name (example: "USER_FULLNAME=John Doe"))
 endif
 
+ifeq (,$(METRICS_API_SECRET))
+$(error METRICS_API_SECRET is not set - usage metrics won't be submitted to SuperHub API; \
+see https://github.com/agilestacks/documentation/wiki/Production#toolbox)
+endif
+
+ifeq (,$(DD_CLIENT_API_KEY))
+$(warning DD_CLIENT_API_KEY is not set - usage metrics won't be submitted to Datadog; \
+see https://github.com/agilestacks/documentation/wiki/Hub-CLI-Usage-Metrics)
+endif
+
 docker ?= docker
 
 DOCKER_BUILD_OPTS :=
@@ -34,7 +44,9 @@ pull-from:
 # DD_CLIENT_API_KEY is optional
 build:
 	ddkey_file=$$(mktemp); \
+	mskey_file=$$(mktemp); \
 	echo "$$DD_CLIENT_API_KEY" > $$ddkey_file; \
+	echo "$$METRICS_API_SECRET" > $$mskey_file; \
 	DOCKER_BUILDKIT=1 $(docker) build \
 		$(DOCKER_BUILD_OPTS) \
 		--build-arg="FULLNAME=$(USER_FULLNAME)"\
@@ -43,6 +55,7 @@ build:
 		--build-arg="HUB_CLI_VERSION=$(HUB_CLI_VERSION)" \
 		--build-arg="HUB_CLI_EXTENSIONS_VERSION=$(HUB_CLI_EXTENSIONS_VERSION)" \
 		--secret id=ddkey,src=$$ddkey_file \
+		--secret id=mskey,src=$$mskey_file \
 		--tag $(IMAGE):$(IMAGE_VERSION) \
 		--tag $(IMAGE):$(IMAGE_TAG) .; \
 	rm $$ddkey_file

@@ -256,8 +256,8 @@ WORKDIR /go/src/hub
 COPY --from=hub-scm /workspace/go.sum /workspace/go.mod ./
 RUN go mod download
 COPY --from=hub-scm /workspace ./
-RUN --mount=type=secret,id=ddkey \
-    make get DD_CLIENT_API_KEY=$(cat /run/secrets/ddkey)
+RUN --mount=type=secret,id=ddkey --mount=type=secret,id=mskey \
+    make get DD_CLIENT_API_KEY=$(cat /run/secrets/ddkey) METRICS_API_SECRET=$(cat /run/secrets/mskey)
 
 ### Checkout Hub CLI Extensions
 FROM alpine/git:latest as hub-extensions
