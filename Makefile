@@ -14,7 +14,7 @@ IMAGE_TAG       ?= latest
 USER_FULLNAME   ?= $(shell id -un)
 REGISTRY_PASS   ?= ~/.docker/agilestacks.txt
 
-ifeq ($(USER_FULLNAME),)
+ifeq (,$(USER_FULLNAME))
 $(error Please supply USER_FULLNAME with your full name (example: "USER_FULLNAME=John Doe"))
 endif
 
