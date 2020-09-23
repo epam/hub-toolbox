@@ -58,7 +58,7 @@ build:
 		--secret id=mskey,src=$$mskey_file \
 		--tag $(IMAGE):$(IMAGE_VERSION) \
 		--tag $(IMAGE):$(IMAGE_TAG) .; \
-	rm $$ddkey_file
+	rm $$ddkey_file $$mskey_file
 .PHONY: build
 
 build-no-cache:
