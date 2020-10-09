@@ -28,7 +28,8 @@ ARG TF_PROVIDER_AWS_VERSION_3="2.49.0"
 ARG TF_PROVIDER_AZURE_VERSION_0="1.43.0"
 ARG TF_PROVIDER_AZURE_VERSION_1="2.2.0"
 ARG TF_PROVIDER_EXTERNAL_VERSION="1.1.2"
-ARG TF_PROVIDER_GOOGLE_VERSION="2.20.1"
+ARG TF_PROVIDER_GOOGLE_VERSION_0="2.20.1"
+ARG TF_PROVIDER_GOOGLE_VERSION_1="3.42.0"
 ARG TF_PROVIDER_IGNITION_VERSION="1.1.0"
 ARG TF_PROVIDER_KUBERNETES_VERSION="1.9.0"
 ARG TF_PROVIDER_LOCAL_VERSION="1.4.0"
@@ -175,14 +176,24 @@ RUN FILE=terraform-provider-external_${TF_PROVIDER_EXTERNAL_VERSION}_linux_amd64
     https://releases.hashicorp.com/terraform-provider-external/${TF_PROVIDER_EXTERNAL_VERSION}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
-RUN FILE=terraform-provider-google_${TF_PROVIDER_GOOGLE_VERSION}_linux_amd64.zip && \
+RUN FILE=terraform-provider-google_${TF_PROVIDER_GOOGLE_VERSION_0}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
-    https://releases.hashicorp.com/terraform-provider-google/${TF_PROVIDER_GOOGLE_VERSION}/$FILE && \
+    https://releases.hashicorp.com/terraform-provider-google/${TF_PROVIDER_GOOGLE_VERSION_0}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
-RUN FILE=terraform-provider-google-beta_${TF_PROVIDER_GOOGLE_VERSION}_linux_amd64.zip && \
+RUN FILE=terraform-provider-google-beta_${TF_PROVIDER_GOOGLE_VERSION_0}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
-    https://releases.hashicorp.com/terraform-provider-google-beta/${TF_PROVIDER_GOOGLE_VERSION}/$FILE && \
+    https://releases.hashicorp.com/terraform-provider-google-beta/${TF_PROVIDER_GOOGLE_VERSION_0}/$FILE && \
+    unzip $FILE -d /opt/tf-plugins
+
+RUN FILE=terraform-provider-google_${TF_PROVIDER_GOOGLE_VERSION_1}_linux_amd64.zip && \
+    test ! -f $FILE && curl -J -L -O \
+    https://releases.hashicorp.com/terraform-provider-google/${TF_PROVIDER_GOOGLE_VERSION_1}/$FILE && \
+    unzip $FILE -d /opt/tf-plugins
+
+RUN FILE=terraform-provider-google-beta_${TF_PROVIDER_GOOGLE_VERSION_1}_linux_amd64.zip && \
+    test ! -f $FILE && curl -J -L -O \
+    https://releases.hashicorp.com/terraform-provider-google-beta/${TF_PROVIDER_GOOGLE_VERSION_1}/$FILE && \
     unzip $FILE -d /opt/tf-plugins
 
 RUN FILE=terraform-provider-ignition_${TF_PROVIDER_IGNITION_VERSION}_linux_amd64.zip && \
