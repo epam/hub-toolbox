@@ -387,7 +387,7 @@ RUN curl -L https://sdk.cloud.google.com | bash -s - --install-dir=/usr/local --
     gcloud config set core/disable_usage_reporting true && \
     gcloud config set component_manager/disable_update_check true
 
-RUN v=2.29-r0; wget -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
+RUN v=2.32-r0; wget -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
     wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$v/glibc-$v.apk && \
     apk add glibc-$v.apk && \
     rm -rf glibc-$v.apk /var/cache/apk/* /tmp/*
