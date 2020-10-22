@@ -260,7 +260,7 @@ RUN git init && \
     git checkout $HUB_CLI_VERSION
 
 ### Build Hub CLI
-FROM golang:1.14-alpine as hub
+FROM golang:1.15-alpine as hub
 RUN apk update && apk upgrade && \
     apk add --no-cache git make sed
 WORKDIR /go/src/hub
