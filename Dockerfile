@@ -99,13 +99,13 @@ RUN FILE=helm-v${HELM2_VERSION}-linux-amd64.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
     https://storage.googleapis.com/kubernetes-helm/$FILE && \
     tar xvzf $FILE linux-amd64/helm --strip-components=1 && \
-    mv helm /usr/local/bin
+    mv helm /usr/local/bin/helm2
 
 RUN FILE=helm-v${HELM3_VERSION}-linux-amd64.tar.gz && \
   test ! -f $FILE && curl -JLO \
   https://get.helm.sh/$FILE && \
   tar xvzf $FILE linux-amd64/helm --strip-components=1 && \
-  mv helm /usr/local/bin/helm3
+  mv helm /usr/local/bin
 
 RUN FILE=openshift-origin-client-tools-v${OC_VERSION}-linux-64bit.tar.gz && \
     test ! -f $FILE && curl -J -L -O \
