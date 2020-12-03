@@ -290,9 +290,6 @@ RUN apk update && apk upgrade && \
     apk add --no-cache git
 RUN go get github.com/google/go-jsonnet/cmd/jsonnet
 
-### Dind
-FROM docker:dind as dind
-
 ### Toolbox
 FROM alpine:3.11
 ARG FULLNAME="Agile Stacks"
@@ -313,8 +310,6 @@ ENV STATE_REGION     "us-east-1"
 ENV TF_INPUT         "0"
 ENV RELEASE_TRACK    "stable"
 ENV LANG             "C.UTF-8"
-ENV DOCKER_DAEMON_ARGS "-D"
-ENV HELM_INSTALL_DIR "/usr/local/bin"
 
 ENV USER             "root"
 ENV UID              "0"
@@ -324,19 +319,12 @@ ENV TF_PLUGIN_CACHE_DIR "/root/.terraform.d/plugin-cache"
 
 ENV GIT_DISCOVERY_ACROSS_FILESYSTEM "1"
 
-COPY --from=dind /usr/local/bin/dockerd-entrypoint.sh /usr/local/bin/dockerd-entrypoint.sh
-COPY --from=dind /usr/local/bin/* /usr/local/bin/
-RUN  mv /usr/local/bin/docker /usr/local/bin/docker-cli
-COPY etc/docker  /usr/local/bin/docker
-
 COPY --from=blobs /usr/local/bin /usr/local/bin
 COPY --from=blobs /opt/tf-plugins ${TF_PLUGIN_CACHE_DIR}/linux_amd64/
 COPY --from=blobs /opt/tf-custom-plugins /root/.terraform.d/plugins/linux_amd64/
 COPY --from=ghub  /go/bin/ghub /usr/local/bin/ghub
 COPY --from=jsonnet /go/bin/jsonnet /usr/local/bin
 
-COPY etc/wrapdocker  /usr/local/bin/wrapdocker
-COPY etc/dmsetup     /usr/local/bin/dmsetup
 COPY etc/terraformrc /root/.terraformrc
 COPY etc/terraformrc /usr/local/share/.terraformrc
 COPY etc/bashrc      /etc/bashrc
@@ -349,6 +337,7 @@ RUN \
     bind-tools \
     ca-certificates \
     curl \
+    docker \
     e2fsprogs \
     expat \
     gettext \
@@ -398,10 +387,7 @@ RUN v=2.32-r0; wget -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerra
     apk add glibc-$v.apk && \
     rm -rf glibc-$v.apk /var/cache/apk/* /tmp/*
 
-RUN ln -s /usr/local/bin/terraform-v0.13 /usr/local/bin/terraform
-
-RUN groupadd -r docker && \
-    usermod -aG docker $(/usr/bin/whoami)
+RUN ln -s terraform-v0.13 /usr/local/bin/terraform
 
 VOLUME /var/lib/docker
 ENTRYPOINT ["/usr/local/bin/entrypoint"]

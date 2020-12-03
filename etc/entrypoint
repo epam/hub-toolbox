@@ -63,11 +63,8 @@ else
     #     ln /root/.terraform.d/plugins/linux_amd64/* $HOME/.terraform.d/plugins/linux_amd64/
     # fi
 
-    # wrapper script also starts docker daemon
-    # doesn't work on Mac? - long timeout
-    if test -z "$TOOLBOX_NO_DOCKER"; then
-        docker version > /dev/null
-        echo "  dockerd started"
+    if test -e /var/run/docker.sock; then
+        chown $UID:$GID /var/run/docker.sock
     fi
 
     # shellcheck disable=SC2086
@@ -76,5 +73,4 @@ else
 fi
 
 pkill -f /opt/halyard/lib/halyard-web
-pkill -f /usr/local/bin/docker-containerd
 exit $status
