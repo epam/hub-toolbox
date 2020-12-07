@@ -20,6 +20,7 @@ ARG VAULT_VERSION="1.3.2"
 ARG YQ_VERSION="3.4.1"
 ARG ISTIOCTL_VERSION="1.5.2"
 ARG EKSCTL_VERSION="0.32.0"
+ARG SOPS_VERSION="v3.6.1"
 
 ARG TF_PROVIDER_ARCHIVE_VERSION="1.2.2"
 ARG TF_PROVIDER_AWS_VERSION_0="2.61.0"
@@ -79,6 +80,10 @@ RUN FILE=mc && \
 RUN FILE=skaffold && \
     test ! -f $FILE && curl -J -L -o $FILE \
     https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+
+RUN FILE=sops && \
+    test ! -f $FILE && curl -J -L -o $FILE \
+    https://github.com/mozilla/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux
 
 WORKDIR /opt/tar
 
