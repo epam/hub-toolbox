@@ -41,13 +41,14 @@ pull-from:
 	docker pull alpine:3.11
 .PHONY: pull-from
 
+export DOCKER_BUILDKIT ?= 1
 # DD_CLIENT_API_KEY is optional
 build:
 	ddkey_file=$$(mktemp); \
 	mskey_file=$$(mktemp); \
 	echo "$$DD_CLIENT_API_KEY" > $$ddkey_file; \
 	echo "$$METRICS_API_SECRET" > $$mskey_file; \
-	DOCKER_BUILDKIT=1 $(docker) build \
+	$(docker) build \
 		$(DOCKER_BUILD_OPTS) \
 		--build-arg="FULLNAME=$(USER_FULLNAME)"\
 		--build-arg="IMAGE_VERSION=$(IMAGE_VERSION)" \
