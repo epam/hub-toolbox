@@ -21,6 +21,7 @@ ARG YQ_VERSION="3.4.1"
 ARG ISTIOCTL_VERSION="1.5.2"
 ARG EKSCTL_VERSION="0.32.0"
 ARG SOPS_VERSION="v3.6.1"
+ARG KUSTOMIZE_VERSION="v3.8.7"
 
 ARG TF_PROVIDER_ARCHIVE_VERSION="1.2.2"
 ARG TF_PROVIDER_AWS_VERSION_0="2.61.0"
@@ -129,6 +130,12 @@ RUN FILE=eksctl_Linux_amd64.tar.gz && \
     https://github.com/weaveworks/eksctl/releases/download/${EKSCTL_VERSION}/$FILE && \
     tar xvzf $FILE eksctl && \
     mv eksctl /usr/local/bin
+
+RUN FILE=kustomize_${KUSTOMIZE_VERSION}_linux_amd64.tar.gz && \
+  test ! -f $FILE && curl -JLO \
+  https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/${KUSTOMIZE_VERSION}/$FILE && \
+  tar xvzf $FILE kustomize && \
+  mv kustomize /usr/local/bin
 
 WORKDIR /opt/zip
 
