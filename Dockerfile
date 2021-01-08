@@ -344,44 +344,44 @@ COPY etc/bashrc      /etc/bashrc
 RUN \
     apk update && apk upgrade && \
     apk add --no-cache \
-    bash \
-    bc \
-    bind-tools \
-    ca-certificates \
-    curl \
-    docker \
-    e2fsprogs \
-    expat \
-    gettext \
-    git \
-    git-subtree \
-    gnupg \
-    iptables \
-    jq \
-    less \
-    libgcc \
-    libstdc++ \
-    lxc \
-    make \
-    nano \
-    nodejs \
-    npm \
-    openssh \
-    openssl \
-    parallel \
-    pwgen \
-    py3-virtualenv \
-    python2 \
-    python3 \
-    strace \
-    rsync \
-    sed \
-    shadow \
-    su-exec \
-    util-linux \
-    vim \
-    wget \
-    zip && \
+        bash \
+        bc \
+        bind-tools \
+        ca-certificates \
+        curl \
+        docker \
+        e2fsprogs \
+        expat \
+        gettext \
+        git \
+        git-subtree \
+        gnupg \
+        iptables \
+        jq \
+        less \
+        libgcc \
+        libstdc++ \
+        lxc \
+        make \
+        nano \
+        nodejs \
+        npm \
+        openssh \
+        openssl \
+        parallel \
+        pwgen \
+        py3-virtualenv \
+        python2 \
+        python3 \
+        strace \
+        rsync \
+        sed \
+        shadow \
+        su-exec \
+        util-linux \
+        vim \
+        wget \
+        zip && \
     apk add --virtual=py-build gcc libffi-dev musl-dev openssl-dev python3-dev && \
     pip3 --no-cache-dir install awscli azure-cli && \
     apk del --purge py-build && \
