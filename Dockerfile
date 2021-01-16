@@ -152,7 +152,7 @@ RUN FILE=terraform_${TF_12_VERSION}_linux_amd64.zip && \
 RUN FILE=terraform_${TF_14_VERSION}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
     https://releases.hashicorp.com/terraform/${TF_14_VERSION}/terraform_${TF_14_VERSION}_linux_amd64.zip && \
-    unzip $FILE -d /usr/local/bin && mv /usr/local/bin/terraform /usr/local/bin/terraform-v0.13
+    unzip $FILE -d /usr/local/bin && mv /usr/local/bin/terraform /usr/local/bin/terraform-v0.14
 
 RUN FILE=terraform-provider-archive_${TF_PROVIDER_ARCHIVE_VERSION}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
@@ -399,7 +399,7 @@ RUN v=2.32-r0; wget -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerra
     apk add glibc-$v.apk && \
     rm -rf glibc-$v.apk /var/cache/apk/* /tmp/*
 
-RUN ln -s terraform-v0.13 /usr/local/bin/terraform
+RUN ln -s terraform-v0.14 /usr/local/bin/terraform
 
 VOLUME /var/lib/docker
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
