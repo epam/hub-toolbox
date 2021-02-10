@@ -378,6 +378,7 @@ RUN \
         sed \
         shadow \
         su-exec \
+        tar \
         util-linux \
         vim \
         wget \
