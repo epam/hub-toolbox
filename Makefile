@@ -44,6 +44,7 @@ pull-from:
 export DOCKER_BUILDKIT ?= 1
 # DD_CLIENT_API_KEY is optional
 build:
+	set -e; \
 	ddkey_file=$$(mktemp); \
 	mskey_file=$$(mktemp); \
 	echo "$$DD_CLIENT_API_KEY" > $$ddkey_file; \
