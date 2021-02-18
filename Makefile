@@ -9,10 +9,10 @@ ifeq ($(HUB_CLI_VERSION),)
 $(error HUB_CLI_VERSION cannot be empty)
 endif
 
-IMAGE_VERSION   ?= $(TOOLBOX_VERSION)-$(HUB_CLI_VERSION)-$(HUB_CLI_EXTENSIONS_VERSION)
-IMAGE_TAG       ?= latest
-USER_FULLNAME   ?= $(shell id -un)
-REGISTRY_PASS   ?= ~/.docker/agilestacks.txt
+IMAGE_VERSION ?= $(TOOLBOX_VERSION)-$(HUB_CLI_VERSION)-$(HUB_CLI_EXTENSIONS_VERSION)
+IMAGE_TAG     ?= latest
+USER_FULLNAME ?= $(shell id -un)
+REGISTRY_PASS ?= ~/.docker/agilestacks.txt
 
 ifeq (,$(USER_FULLNAME))
 $(error Please supply USER_FULLNAME with your full name (example: "USER_FULLNAME=John Doe"))
