@@ -3,7 +3,7 @@
 IMAGE           ?= agilestacks/toolbox
 TOOLBOX_VERSION := $(shell git rev-parse HEAD | cut -c-7)
 HUB_CLI_VERSION            := $(shell git ls-remote -q https://github.com/agilestacks/hub.git master 2>/dev/null | cut -c-7)
-HUB_CLI_EXTENSIONS_VERSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-extensions.git master 2>/dev/null | cut -c-7)
+HUB_CLI_EXTENSIONS_VERSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-extensions.git stable 2>/dev/null | cut -c-7)
 
 ifeq ($(HUB_CLI_VERSION),)
 $(error HUB_CLI_VERSION cannot be empty)
