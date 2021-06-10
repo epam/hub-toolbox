@@ -14,7 +14,7 @@ ARG KUBECTL_VERSION="1.20.7"
 ARG OC_VERSION="3.11.0-0cbc58b"
 ARG TF_11_VERSION="0.11.14"
 ARG TF_12_VERSION="0.12.29"
-ARG TF_15_VERSION="0.15.4"
+ARG TF_10_VERSION="1.0.0"
 ARG TINI_VERSION="0.16.1"
 ARG VAULT_VERSION="1.3.2"
 ARG YQ_VERSION="v4.6.3"
@@ -149,10 +149,10 @@ RUN FILE=terraform_${TF_12_VERSION}_linux_amd64.zip && \
     https://releases.hashicorp.com/terraform/${TF_12_VERSION}/terraform_${TF_12_VERSION}_linux_amd64.zip && \
     unzip $FILE -d /usr/local/bin && mv /usr/local/bin/terraform /usr/local/bin/terraform-v0.12
 
-RUN FILE=terraform_${TF_15_VERSION}_linux_amd64.zip && \
+RUN FILE=terraform_${TF_10_VERSION}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
-    https://releases.hashicorp.com/terraform/${TF_15_VERSION}/terraform_${TF_15_VERSION}_linux_amd64.zip && \
-    unzip $FILE -d /usr/local/bin && mv /usr/local/bin/terraform /usr/local/bin/terraform-v0.15
+    https://releases.hashicorp.com/terraform/${TF_10_VERSION}/terraform_${TF_10_VERSION}_linux_amd64.zip && \
+    unzip $FILE -d /usr/local/bin && mv /usr/local/bin/terraform /usr/local/bin/terraform-v1.0
 
 RUN FILE=terraform-provider-archive_${TF_PROVIDER_ARCHIVE_VERSION}_linux_amd64.zip && \
     test ! -f $FILE && curl -J -L -O \
@@ -402,7 +402,7 @@ RUN v=2.33-r0; wget -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerra
     apk add glibc-$v.apk && \
     rm -rf glibc-$v.apk /var/cache/apk/* /tmp/*
 
-RUN ln -s terraform-v0.15 /usr/local/bin/terraform
+RUN ln -s terraform-v1.0 /usr/local/bin/terraform
 
 VOLUME /var/lib/docker
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
