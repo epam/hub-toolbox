@@ -61,7 +61,8 @@ docker run -ti --rm \
     --cap-add=NET_ADMIN \
     -w "$BASEDIR" \
     $envadd \
-    "$IMAGE:$IMAGE_VERSION" "$@"
+    --platform linux/amd64 \
+    "$IMAGE:$IMAGE_VERSION" "$@" 
 echo "Shutting down toolbox... bye!"
 
 rm -f $envfile $pruned_docker_config
