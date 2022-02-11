@@ -19,7 +19,7 @@ $(error Please supply USER_FULLNAME with your full name (example: "USER_FULLNAME
 endif
 
 ifeq (,$(METRICS_API_SECRET))
-$(error METRICS_API_SECRET is not set - usage metrics won't be submitted to SuperHub API; \
+$(warning METRICS_API_SECRET is not set - usage metrics won't be submitted to SuperHub API; \
 see https://github.com/agilestacks/documentation/wiki/Production#toolbox)
 endif
 
@@ -63,12 +63,24 @@ build:
 	rm $$ddkey_file $$mskey_file
 .PHONY: build
 
+build-sandbox:
+	$(MAKE) build docker="docker buildx" DOCKER_BUILD_OPTS="-f gcp-sandbox/Dockerfile --platform linux/amd64" IMAGE=gcr.io/superhub/toolbox-sandbox
+.PHONY: build-sandbox
+
 build-no-cache:
 	$(MAKE) build DOCKER_BUILD_OPTS="--no-cache"
 .PHONY: build-no-cache
 
 push: login push-version push-tag
 .PHONY: push
+
+push-gcr: push-version push-tag
+.PHONY: push-gcr
+
+push-sandbox-gcr:
+	@ echo "Make sure you are logged into GCR"
+	$(MAKE) push-gcr IMAGE=gcr.io/superhub/toolbox-sandbox
+.PHONY: push-sandbox-gcr
 
 push-version:
 	$(docker) push $(IMAGE):$(IMAGE_VERSION)

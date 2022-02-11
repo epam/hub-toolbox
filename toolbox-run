@@ -18,7 +18,7 @@ fi
 
 TOOLBOX_SHELL=${TOOLBOX_SHELL:-/bin/bash}
 IMAGE=${IMAGE:-agilestacks/toolbox}
-IMAGE_VERSION=${IMAGE_VERSION:-stable}
+IMAGE_VERSION=${IMAGE_VERSION:-sandbox}
 
 if  test -z "${AWS_PROFILE}" && \
     test -x "$(which aws)" && \
