@@ -67,6 +67,10 @@ build-sandbox:
 	$(MAKE) build docker="docker buildx" DOCKER_BUILD_OPTS="-f gcp-sandbox/Dockerfile --platform linux/amd64" IMAGE=gcr.io/superhub/toolbox-sandbox
 .PHONY: build-sandbox
 
+build-gcp-cloud-shell-box:
+	$(MAKE) build docker="docker buildx" DOCKER_BUILD_OPTS="-f gcp-cloud-shell/Dockerfile --platform linux/amd64" IMAGE=gcr.io/superhub/cloud-shell
+.PHONY: build-gcp-cloud-shell-box
+
 build-no-cache:
 	$(MAKE) build DOCKER_BUILD_OPTS="--no-cache"
 .PHONY: build-no-cache
@@ -81,6 +85,11 @@ push-sandbox-gcr:
 	@ echo "Make sure you are logged into GCR"
 	$(MAKE) push-gcr IMAGE=gcr.io/superhub/toolbox-sandbox
 .PHONY: push-sandbox-gcr
+
+push-cloud-shell-box-gcr:
+	@ echo "Make sure you are logged into GCR"
+	$(MAKE) push-gcr IMAGE=gcr.io/superhub/cloud-shell
+.PHONY: push-cloud-shell-box-gcr
 
 push-version:
 	$(docker) push $(IMAGE):$(IMAGE_VERSION)
