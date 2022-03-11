@@ -3,7 +3,7 @@
 IMAGE           ?= agilestacks/toolbox
 TOOLBOX_VERSION := $(shell git rev-parse HEAD | cut -c-7)
 HUB_CLI_VERSION            := $(shell git ls-remote -q https://github.com/agilestacks/hub.git master 2>/dev/null | cut -c-7)
-HUB_CLI_EXTENSIONS_VERSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-extensions.git stable 2>/dev/null | cut -c-7)
+HUB_CLI_EXTENSIONS_VERSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-extensions.git gcp-extensions 2>/dev/null | cut -c-7)
 
 ifeq ($(HUB_CLI_VERSION),)
 $(error HUB_CLI_VERSION cannot be empty)
@@ -68,7 +68,7 @@ build-sandbox:
 .PHONY: build-sandbox
 
 build-gcp-cloud-shell-box:
-	$(MAKE) build docker="docker buildx" DOCKER_BUILD_OPTS="-f gcp-cloud-shell/Dockerfile --platform linux/amd64" IMAGE=gcr.io/superhub/cloud-shell
+	$(MAKE) build docker="docker buildx" DOCKER_BUILD_OPTS="-f gcp-cloud-shell/Dockerfile --platform linux/amd64" HUB_BINARY_VERSION=v1.0.2 IMAGE=gcr.io/superhub/cloud-shell
 .PHONY: build-gcp-cloud-shell-box
 
 build-no-cache:

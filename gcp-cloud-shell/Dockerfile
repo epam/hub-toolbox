@@ -16,14 +16,14 @@ RUN git clone https://github.com/ahmetb/kubectx && \
 
 FROM gcr.io/cloudshell-images/cloudshell:latest
 ARG YQ_VERSION="v4.16.2"
-ARG HUB_CLI_VERSION="v1.0.2"
+ARG HUB_BINARY_VERSION="v1.0.2"
 
 ### Install missing packages
 RUN apt-get update && \
     apt-get install uuid-runtime netcat -y
 
 ### Install Hub CLI
-RUN curl -J -L -o hub https://github.com/agilestacks/hub/releases/download/"$HUB_CLI_VERSION"/hub.linux_amd64 && \
+RUN curl -J -L -o hub https://github.com/agilestacks/hub/releases/download/"$HUB_BINARY_VERSION"/hub.linux_amd64 && \
     chmod +x hub && \
     mv hub /usr/local/bin
 

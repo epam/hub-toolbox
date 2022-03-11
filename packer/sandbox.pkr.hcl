@@ -12,7 +12,7 @@ source "googlecompute" "superhub-toolbox" {
   source_image = "ubuntu-minimal-2110-impish-v20220203"
   ssh_username = "packer"
   zone = "us-central1-a"
-  image_name = "superhub-toolbox" 
+  image_name = "superhub-toolbox-2" 
 }
 
 build {
