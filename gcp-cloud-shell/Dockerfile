@@ -16,7 +16,10 @@ RUN git clone https://github.com/ahmetb/kubectx && \
 
 FROM gcr.io/cloudshell-images/cloudshell:latest
 ARG YQ_VERSION="v4.16.2"
-ARG HUB_BINARY_VERSION="v1.0.2"
+ARG HUB_BINARY_VERSION="v1.0.3"
+ARG JQ_VERSION="1.6"
+ARG K6_VERSION="v0.37.0"
+ARG XK6_VERSION="0.6.1"
 
 ### Install missing packages
 RUN apt-get update && \
@@ -35,10 +38,24 @@ RUN curl -J -L -o yq https://github.com/mikefarah/yq/releases/download/"$YQ_VERS
     chmod +x yq && \
     mv yq /usr/local/bin
 
-### Install jq 1.6
-RUN curl -J -L -o jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && \
+### Install jq 
+RUN curl -J -L -o jq https://github.com/stedolan/jq/releases/download/jq-"$JQ_VERSION"/jq-linux64 && \
     chmod +x jq && \
     mv jq /usr/local/bin
+
+### Install k6
+ RUN curl -J -L -o k6.tar.gz https://github.com/grafana/k6/releases/download/"$K6_VERSION"/k6-"$K6_VERSION"-linux-amd64.tar.gz && \
+    tar -xf k6.tar.gz --strip-components 1 && \
+    chmod +x k6 && \
+    mv k6 /usr/local/bin && \
+    rm k6.tar.gz
+
+### Install k6x
+ RUN curl -J -L -o xk6.tar.gz https://github.com/grafana/xk6/releases/download/v"$XK6_VERSION"/xk6_"$XK6_VERSION"_linux_amd64.tar.gz && \
+    tar -xf xk6.tar.gz xk6 && \
+    chmod +x xk6 && \
+    mv xk6 /usr/local/bin && \
+    rm xk6.tar.gz    
 
 ### Install kubectx & kubens
 COPY --from=kube-tools /tmp/kubectx/kubectx /usr/local/bin

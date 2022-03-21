@@ -68,7 +68,7 @@ build-sandbox:
 .PHONY: build-sandbox
 
 build-gcp-cloud-shell-box:
-	$(MAKE) build docker="docker buildx" DOCKER_BUILD_OPTS="-f gcp-cloud-shell/Dockerfile --platform linux/amd64" HUB_BINARY_VERSION=v1.0.2 IMAGE=gcr.io/superhub/cloud-shell
+	$(MAKE) build docker="docker buildx" DOCKER_BUILD_OPTS="-f gcp-cloud-shell/Dockerfile --platform linux/amd64" HUB_BINARY_VERSION=v1.0.3 IMAGE=gcr.io/superhub/cloud-shell
 .PHONY: build-gcp-cloud-shell-box
 
 build-no-cache:
