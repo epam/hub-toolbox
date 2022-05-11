@@ -4,6 +4,7 @@ IMAGE           ?= agilestacks/toolbox
 TOOLBOX_VERSION := $(shell git rev-parse HEAD | cut -c-7)
 HUB_CLI_VERSION            := $(shell git ls-remote -q https://github.com/agilestacks/hub.git master 2>/dev/null | cut -c-7)
 HUB_CLI_EXTENSIONS_VERSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-extensions.git gcp-extensions 2>/dev/null | cut -c-7)
+HUB_STATE_EXTENSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-utils.git master 2>/dev/null | cut -c-7)
 
 ifeq ($(HUB_CLI_VERSION),)
 $(error HUB_CLI_VERSION cannot be empty)
@@ -56,6 +57,7 @@ build:
 		--build-arg="TOOLBOX_VERSION=$(TOOLBOX_VERSION)" \
 		--build-arg="HUB_CLI_VERSION=$(HUB_CLI_VERSION)" \
 		--build-arg="HUB_CLI_EXTENSIONS_VERSION=$(HUB_CLI_EXTENSIONS_VERSION)" \
+		--build-arg="HUB_STATE_EXTENSION=$(HUB_STATE_EXTENSION)" \
 		--secret id=ddkey,src=$$ddkey_file \
 		--secret id=mskey,src=$$mskey_file \
 		--tag $(IMAGE):$(IMAGE_VERSION) \
@@ -68,7 +70,7 @@ build-sandbox:
 .PHONY: build-sandbox
 
 build-gcp-cloud-shell-box:
-	$(MAKE) build docker="docker buildx" DOCKER_BUILD_OPTS="-f gcp-cloud-shell/Dockerfile --platform linux/amd64" HUB_BINARY_VERSION=v1.0.3 IMAGE=gcr.io/superhub/cloud-shell
+	$(MAKE) build docker="docker buildx" DOCKER_BUILD_OPTS="-f gcp-cloud-shell/Dockerfile --platform linux/amd64" HUB_CLI_VERSION=v1.0.6 IMAGE=gcr.io/superhub/cloud-shell
 .PHONY: build-gcp-cloud-shell-box
 
 build-no-cache:
@@ -88,7 +90,7 @@ push-sandbox-gcr:
 
 push-cloud-shell-box-gcr:
 	@ echo "Make sure you are logged into GCR"
-	$(MAKE) push-gcr IMAGE=gcr.io/superhub/cloud-shell
+	$(MAKE) push-gcr HUB_CLI_VERSION=v1.0.6 IMAGE=gcr.io/superhub/cloud-shell
 .PHONY: push-cloud-shell-box-gcr
 
 push-version:

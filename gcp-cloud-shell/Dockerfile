@@ -7,6 +7,23 @@ RUN git clone https://github.com/agilestacks/hub-extensions.git && \
     cd hub-extensions && \
     git checkout $HUB_CLI_EXTENSIONS_VERSION
 
+### Checkout hub-state tool
+FROM alpine/git:latest as hub-state-scm
+ARG HUB_STATE_EXTENSION="master"
+
+WORKDIR /workspace
+RUN git clone https://github.com/agilestacks/hub-state.git && \
+    cd hub-state/cli && \
+    git checkout $HUB_STATE_EXTENSION
+
+### Build hub-state tool
+FROM gcr.io/cloudshell-images/cloudshell:latest as hub-state
+RUN apt-get update
+WORKDIR /workspace
+COPY --from=hub-state-scm /workspace/hub-state/cli /workspace
+RUN make build
+RUN chmod +x bin/hub-state
+
 ### Checkout kubectx & kubens
 FROM alpine/git:latest as kube-tools
 
@@ -16,7 +33,7 @@ RUN git clone https://github.com/ahmetb/kubectx && \
 
 FROM gcr.io/cloudshell-images/cloudshell:latest
 ARG YQ_VERSION="v4.16.2"
-ARG HUB_BINARY_VERSION="v1.0.3"
+ARG HUB_CLI_VERSION="v1.0.3"
 ARG JQ_VERSION="1.6"
 ARG K6_VERSION="v0.37.0"
 ARG XK6_VERSION="0.6.1"
@@ -26,7 +43,7 @@ RUN apt-get update && \
     apt-get install uuid-runtime netcat -y
 
 ### Install Hub CLI
-RUN curl -J -L -o hub https://github.com/agilestacks/hub/releases/download/"$HUB_BINARY_VERSION"/hub.linux_amd64 && \
+RUN curl -J -L -o hub https://github.com/agilestacks/hub/releases/download/"$HUB_CLI_VERSION"/hub.linux_amd64 && \
     chmod +x hub && \
     mv hub /usr/local/bin
 
@@ -61,5 +78,4 @@ RUN curl -J -L -o jq https://github.com/stedolan/jq/releases/download/jq-"$JQ_VE
 COPY --from=kube-tools /tmp/kubectx/kubectx /usr/local/bin
 COPY --from=kube-tools /tmp/kubectx/kubens /usr/local/bin
 
-
-### https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://source.developers.google.com/p/superhub/r/stacks&cloudshell_image=gcr.io/superhub/cloud-shell
+COPY --from=hub-state /workspace/bin/hub-state /usr/local/share/hub
