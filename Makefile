@@ -3,8 +3,7 @@
 IMAGE           ?= agilestacks/toolbox
 TOOLBOX_VERSION := $(shell git rev-parse HEAD | cut -c-7)
 HUB_CLI_VERSION            := $(shell git ls-remote -q https://github.com/agilestacks/hub.git master 2>/dev/null | cut -c-7)
-HUB_CLI_EXTENSIONS_VERSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-extensions.git master 2>/dev/null | cut -c-7)
-HUB_STATE_EXTENSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-utils.git master 2>/dev/null | cut -c-7)
+HUB_CLI_EXTENSIONS_VERSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-extensions.git stable 2>/dev/null | cut -c-7)
 
 ifeq ($(HUB_CLI_VERSION),)
 $(error HUB_CLI_VERSION cannot be empty)
@@ -20,7 +19,7 @@ $(error Please supply USER_FULLNAME with your full name (example: "USER_FULLNAME
 endif
 
 ifeq (,$(METRICS_API_SECRET))
-$(warning METRICS_API_SECRET is not set - usage metrics won't be submitted to SuperHub API; \
+$(error METRICS_API_SECRET is not set - usage metrics won't be submitted to SuperHub API; \
 see https://github.com/agilestacks/documentation/wiki/Production#toolbox)
 endif
 
@@ -57,7 +56,6 @@ build:
 		--build-arg="TOOLBOX_VERSION=$(TOOLBOX_VERSION)" \
 		--build-arg="HUB_CLI_VERSION=$(HUB_CLI_VERSION)" \
 		--build-arg="HUB_CLI_EXTENSIONS_VERSION=$(HUB_CLI_EXTENSIONS_VERSION)" \
-		--build-arg="HUB_STATE_EXTENSION=$(HUB_STATE_EXTENSION)" \
 		--secret id=ddkey,src=$$ddkey_file \
 		--secret id=mskey,src=$$mskey_file \
 		--tag $(IMAGE):$(IMAGE_VERSION) \
