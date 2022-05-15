@@ -22,7 +22,7 @@ The naming convention of the image tag is:
 gcr.io/superhub/cloud-shell:<commit hash of CLI binary>-<commit hash of CLI extensions>-<commit hash of HUB state>
 ```
 
-By default, the extensions and the mgmt tool come from the following references (branches, tags, etc.):
+By default, the extensions and the mgmt tool check out from the following references (branches, tags, etc.):
 ```
 HUB_EXTENSIONS_REF=gcp-extensions 
 HUB_STATE_REF=master
