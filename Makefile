@@ -3,7 +3,7 @@
 IMAGE           ?= agilestacks/toolbox
 TOOLBOX_VERSION := $(shell git rev-parse HEAD | cut -c-7)
 HUB_CLI_VERSION            := $(shell git ls-remote -q https://github.com/agilestacks/hub.git master 2>/dev/null | cut -c-7)
-HUB_CLI_EXTENSIONS_VERSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-extensions.git gcp-extensions 2>/dev/null | cut -c-7)
+HUB_CLI_EXTENSIONS_VERSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-extensions.git master 2>/dev/null | cut -c-7)
 HUB_STATE_EXTENSION := $(shell git ls-remote -q https://github.com/agilestacks/hub-utils.git master 2>/dev/null | cut -c-7)
 
 ifeq ($(HUB_CLI_VERSION),)
@@ -65,33 +65,12 @@ build:
 	rm $$ddkey_file $$mskey_file
 .PHONY: build
 
-build-sandbox:
-	$(MAKE) build docker="docker buildx" DOCKER_BUILD_OPTS="-f gcp-sandbox/Dockerfile --platform linux/amd64" IMAGE=gcr.io/superhub/toolbox-sandbox
-.PHONY: build-sandbox
-
-build-gcp-cloud-shell-box:
-	$(MAKE) build docker="docker buildx" DOCKER_BUILD_OPTS="-f gcp-cloud-shell/Dockerfile --platform linux/amd64" HUB_CLI_VERSION=v1.0.6 IMAGE=gcr.io/superhub/cloud-shell
-.PHONY: build-gcp-cloud-shell-box
-
 build-no-cache:
 	$(MAKE) build DOCKER_BUILD_OPTS="--no-cache"
 .PHONY: build-no-cache
 
 push: login push-version push-tag
 .PHONY: push
-
-push-gcr: push-version push-tag
-.PHONY: push-gcr
-
-push-sandbox-gcr:
-	@ echo "Make sure you are logged into GCR"
-	$(MAKE) push-gcr IMAGE=gcr.io/superhub/toolbox-sandbox
-.PHONY: push-sandbox-gcr
-
-push-cloud-shell-box-gcr:
-	@ echo "Make sure you are logged into GCR"
-	$(MAKE) push-gcr HUB_CLI_VERSION=v1.0.6 IMAGE=gcr.io/superhub/cloud-shell
-.PHONY: push-cloud-shell-box-gcr
 
 push-version:
 	$(docker) push $(IMAGE):$(IMAGE_VERSION)

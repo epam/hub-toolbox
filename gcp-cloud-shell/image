@@ -1,0 +1,45 @@
+#!/bin/bash
+
+HUB_EXTENSIONS_REF=gcp-extensions
+HUB_STATE_REF=master
+HUB_CLI_RELEASE_VERSION=v1.0.6
+
+while [ "$1" != "" ]; do
+  case $1 in
+    --release )           RELEASE=1
+                          ;;
+  esac
+  shift
+done
+
+IMAGE_NAME=gcr.io/superhub/cloud-shell
+
+HUB_CLI_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub.git "$HUB_CLI_RELEASE_VERSION" 2>/dev/null | cut -c-7)
+HUB_EXTENSIONS_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-extensions.git "$HUB_EXTENSIONS_REF" 2>/dev/null | cut -c-7)
+HUB_STATE_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-utils.git "$HUB_STATE_REF" 2>/dev/null | cut -c-7)
+
+IMAGE_TAG="$IMAGE_NAME:$HUB_CLI_VERSION-$HUB_EXTENSIONS_VERSION-$HUB_STATE_VERSION"
+IMAGE_RELEASE_TAG="$IMAGE_NAME:latest"
+
+docker buildx build --platform linux/amd64 \
+  --build-arg="HUB_CLI_RELEASE_VERSION=$HUB_CLI_RELEASE_VERSION" \
+  --build-arg="HUB_EXTENSIONS_VERSION=$HUB_EXTENSIONS_VERSION" \
+  --build-arg="HUB_STATE_VERSION=$HUB_STATE_VERSION" \
+  --tag "$IMAGE_TAG" .
+
+if docker push "$IMAGE_TAG"; then
+  echo "Built & pushed cloud-shell image from:"
+  echo "* Hub CLI: $HUB_CLI_RELEASE_VERSION $HUB_CLI_VERSION"
+  echo "* Hub Extensions: $HUB_EXTENSIONS_REF $HUB_EXTENSIONS_VERSION"
+  echo "* Hub State: $HUB_STATE_REF $HUB_STATE_VERSION"
+  echo "Image tag: $IMAGE_TAG"
+else
+  echo "^^^ Can't push the image, see the error above ^^^"
+fi
+
+if test -n "$RELEASE"; then
+  echo "Releasing image with tag $IMAGE_RELEASE_TAG"
+  docker tag "$IMAGE_TAG" "$IMAGE_RELEASE_TAG"
+  docker push "$IMAGE_RELEASE_TAG"
+  echo "Image tag: $IMAGE_RELEASE_TAG"
+fi
