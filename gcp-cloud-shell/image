@@ -1,13 +1,24 @@
-#!/bin/bash
+#!/bin/bash -e
 
 HUB_EXTENSIONS_REF=gcp-extensions
 HUB_STATE_REF=master
 HUB_CLI_RELEASE_VERSION=v1.0.6
+IMAGE_VERSION=latest
 
-while [ "$1" != "" ]; do
+while test -n "$1"; do
   case $1 in
-    --release )           RELEASE=1
+    --release )           RELEASE="1"
                           ;;
+    --extensions )        HUB_EXTENSIONS_REF="$2"
+                          shift
+                          ;;                          
+    --release-version )   IMAGE_VERSION="$2"
+                          RELEASE="1"
+                          shift
+                          ;;         
+    * )                   echo "Error: unknown option $1"
+                          exit 1
+    ;;
   esac
   shift
 done
@@ -19,7 +30,6 @@ HUB_EXTENSIONS_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-ext
 HUB_STATE_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-utils.git "$HUB_STATE_REF" 2>/dev/null | cut -c-7)
 
 IMAGE_TAG="$IMAGE_NAME:$HUB_CLI_VERSION-$HUB_EXTENSIONS_VERSION-$HUB_STATE_VERSION"
-IMAGE_RELEASE_TAG="$IMAGE_NAME:latest"
 
 docker buildx build --platform linux/amd64 \
   --build-arg="HUB_CLI_RELEASE_VERSION=$HUB_CLI_RELEASE_VERSION" \
@@ -39,6 +49,7 @@ else
 fi
 
 if test -n "$RELEASE"; then
+  IMAGE_RELEASE_TAG="$IMAGE_NAME:$IMAGE_VERSION"
   echo "Releasing image with tag $IMAGE_RELEASE_TAG"
   docker tag "$IMAGE_TAG" "$IMAGE_RELEASE_TAG"
   docker push "$IMAGE_RELEASE_TAG"

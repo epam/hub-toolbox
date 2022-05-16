@@ -79,3 +79,5 @@ COPY --from=kube-tools /tmp/kubectx/kubectx /usr/local/bin
 COPY --from=kube-tools /tmp/kubectx/kubens /usr/local/bin
 
 COPY --from=hub-state /workspace/bin/hub-state /usr/local/share/hub
+
+COPY bashrc.google /google/devshell/bashrc.google
