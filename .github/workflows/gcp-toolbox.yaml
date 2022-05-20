@@ -57,7 +57,7 @@ jobs:
       - id: 'versions'
         name: 'Calculate versions'
         run: |
-          TOOLBOX_VERSION=$(echo "${{ github.sha }}" | cur -c-7)
+          TOOLBOX_VERSION=$(echo "${{ github.sha }}" | cut -c-7)
 
           echo "::set-output name=toolboxVersion::$TOOLBOX_VERSION"
           echo "::set-output name=hubVersion::${{ github.event.inputs.hubCommit || steps.info.outputs.hubVersion }}"
