@@ -97,7 +97,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            gcr.io/superhub/cloud-shell
+            gcr.io/superhub/gcp-toolbox
           tags: |
             type=raw,value=latest
             type=raw,value=${{ steps.image.outputs.version }}
