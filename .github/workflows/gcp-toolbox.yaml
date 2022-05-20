@@ -90,8 +90,8 @@ jobs:
             gcr.io/superhub/gcp-toolbox:latest
             gcr.io/superhub/gcp-toolbox:${{ steps.versions.outputs.toolboxVersion }}-${{ steps.versions.outputs.hubVersion }}-${{ steps.versions.outputs.hubExtVersion }}-${{ steps.versions.outputs.hubStateVersion }}
           build-args: |
-            USER_FULLNAME="${{ steps.versions.info.userFullname || github.actor }}"
-            TOOLBOX_VERSION="${{ steps.versions.outputs.toolboxVersion }}"
-            HUB_CLI_VERSION="${{ steps.versions.outputs.hubVersion }}"
-            HUB_EXTENSIONS_VERSION="${{ steps.versions.outputs.hubExtVersion }}"
-            HUB_STATE_VERSION="${{ steps.versions.outputs.hubStateVersion }}"
+            USER_FULLNAME=${{ steps.versions.info.userFullname || github.actor }}
+            TOOLBOX_VERSION=${{ steps.versions.outputs.toolboxVersion }}
+            HUB_CLI_VERSION=${{ steps.versions.outputs.hubVersion }}
+            HUB_EXTENSIONS_VERSION=${{ steps.versions.outputs.hubExtVersion }}
+            HUB_STATE_VERSION=${{ steps.versions.outputs.hubStateVersion }}
