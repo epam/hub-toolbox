@@ -70,6 +70,11 @@ jobs:
           echo "::set-output name=hubExtVersion::${{ github.event.inputs.hubExtCommit || steps.info.outputs.hubExtVersion }}"
           echo "::set-output name=hubStateVersion::${{ github.event.inputs.hubStateCommit || steps.info.outputs.hubStateVersion }}"
 
+      - id: 'image'
+        name: 'Image version'
+        run: |
+          echo "::set-output name=version::${{ steps.versions.outputs.toolboxVersion }}-${{ steps.versions.outputs.hubVersion }}-${{ steps.versions.outputs.hubExtVersion }}-${{ steps.versions.outputs.hubStateVersion }}"
+
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v0'
