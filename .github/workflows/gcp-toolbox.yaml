@@ -1,0 +1,97 @@
+name: 'Build and Push Toolbox for GCP'
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'gcp-toolbox/Dockerfile'
+  workflow_dispatch:
+    inputs:
+      hubRef:
+        description: 'Hub CLI git ref'
+        required: true
+        default: 'v1.0.6'
+      hubCommit:
+        description: 'Hub CLI commit hash. If empty latest release tag is used.'
+        required: false
+        default: ''
+      hubExtRef:
+        description: 'Hub Extensions git ref'
+        required: true
+        default: 'gcp-extensions'
+      hubExtCommit:
+        description: 'Hub Extensions commit hash. If empty latest is used.'
+        required: false
+        default: ''
+      hubStateRef:
+        description: 'Hub State git ref'
+        required: true
+        default: 'master'
+      hubStateCommit:
+        description: 'Hub State commit hash. If empty latest is used.'
+        required: false
+        default: ''
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@v3'
+
+      - id: 'info'
+        name: 'Gather info'
+        run: |
+          HUB_CLI_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub.git "${{ github.event.inputs.hubRef }}" 2>/dev/null | cut -c-7)
+          HUB_EXTENSIONS_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-extensions.git "${{ github.event.inputs.hubExtRef }}" 2>/dev/null | cut -c-7)
+          HUB_STATE_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-state.git "${{ github.event.inputs.hubStateRef }}" 2>/dev/null | cut -c-7)
+          USER_FULLNAME=$(curl -s -H "Accept: application/vnd.github.v3+json" "${{ github.event.sender.url }}" | jq -crM '.name | select(.)')
+
+          echo "::set-output name=hubVersion::$HUB_CLI_VERSION"
+          echo "::set-output name=hubExtVersion::$HUB_EXTENSIONS_VERSION"
+          echo "::set-output name=hubStateVersion::$HUB_STATE_VERSION"
+          echo "::set-output name=userFullname::$USER_FULLNAME"
+
+      - id: 'versions'
+        name: 'Calculate versions'
+        run: |
+          TOOLBOX_VERSION=$(echo "${{ github.sha }}" | cur -c-7)
+
+          echo "::set-output name=toolboxVersion::$TOOLBOX_VERSION"
+          echo "::set-output name=hubVersion::${{ github.event.inputs.hubCommit || steps.info.outputs.hubVersion }}"
+          echo "::set-output name=hubExtVersion::${{ github.event.inputs.hubExtCommit || steps.info.outputs.hubExtVersion }}"
+          echo "::set-output name=hubStateVersion::${{ github.event.inputs.hubStateCommit || steps.info.outputs.hubStateVersion }}"
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          token_format: 'access_token'
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+      - name: 'Login to GCR'
+        uses: 'docker/login-action@v2'
+        with:
+          registry: 'gcr.io'
+          username: 'oauth2accesstoken'
+          password: '${{ steps.auth.outputs.access_token }}'
+
+      - name: 'Set up Docker Buildx'
+        uses: 'docker/setup-buildx-action@v2'
+
+      - name: 'Build and push'
+        uses: "docker/build-push-action@v3"
+        with:
+          context: ./gcp-toolbox
+          push: true
+          tags: |
+            gcr.io/superhub/gcp-toolbox:latest
+            gcr.io/superhub/gcp-toolbox:${{ steps.versions.outputs.toolboxVersion }}-${{ steps.versions.outputs.hubVersion }}-${{ steps.versions.outputs.hubExtVersion }}-${{ steps.versions.outputs.hubStateVersion }}
+          build-args: |
+            USER_FULLNAME="${{ steps.versions.info.userFullname || github.actor }}"
+            TOOLBOX_VERSION="${{ steps.versions.outputs.toolboxVersion }}"
+            HUB_CLI_VERSION="${{ steps.versions.outputs.hubVersion }}"
+            HUB_EXTENSIONS_VERSION="${{ steps.versions.outputs.hubExtVersion }}"
+            HUB_STATE_VERSION="${{ steps.versions.outputs.hubStateVersion }}"
