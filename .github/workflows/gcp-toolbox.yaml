@@ -86,6 +86,8 @@ jobs:
         with:
           context: ./gcp-toolbox
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: |
             gcr.io/superhub/gcp-toolbox:latest
             gcr.io/superhub/gcp-toolbox:${{ steps.versions.outputs.toolboxVersion }}-${{ steps.versions.outputs.hubVersion }}-${{ steps.versions.outputs.hubExtVersion }}-${{ steps.versions.outputs.hubStateVersion }}
