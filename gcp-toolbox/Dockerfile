@@ -115,7 +115,7 @@ RUN FILE="terraform-provider-random_${TF_PROVIDER_RANDOM_VERSION}_linux_amd64.zi
 
 ### Checkout Hub CLI
 FROM alpine/git:latest as hub-scm
-ARG HUB_CLI_VERSION="(unknown)"
+ARG HUB_CLI_VERSION="v1.0.6"
 WORKDIR /workspace
 RUN git init && \
     git remote add -f origin https://github.com/agilestacks/hub.git && \
@@ -134,11 +134,11 @@ RUN make get
 
 ### Checkout Hub CLI Extensions
 FROM alpine/git:latest as hub-extensions
-ARG HUB_CLI_EXTENSIONS_VERSION="master"
+ARG HUB_EXTENSIONS_VERSION="gcp-extensions"
 WORKDIR /tmp
 RUN git clone https://github.com/agilestacks/hub-extensions.git && \
     cd hub-extensions && \
-    git checkout ${HUB_CLI_EXTENSIONS_VERSION}
+    git checkout ${HUB_EXTENSIONS_VERSION}
 
 ### Checkout hub-state tool
 FROM alpine/git:latest as hub-state-scm
@@ -158,16 +158,17 @@ RUN chmod +x bin/hub-state
 
 ### Toolbox
 FROM alpine:3.15
-ARG FULLNAME="Agile Stacks"
-ARG IMAGE_VERSION="(unknown)"
+ARG USER_FULLNAME="Agile Stacks"
 ARG TOOLBOX_VERSION="(unknown)"
 ARG HUB_CLI_VERSION="master"
-ARG HUB_CLI_EXTENSIONS_VERSION="master"
+ARG HUB_EXTENSIONS_VERSION="gcp-extensions"
+ARG HUB_STATE_VERSION="master"
 
-LABEL maintainer="${FULLNAME}"
+LABEL maintainer="${USER_FULLNAME}"
 LABEL toolbox="${TOOLBOX_VERSION}"
 LABEL hub="${HUB_CLI_VERSION}"
-LABEL extensions="${HUB_CLI_EXTENSIONS_VERSION}"
+LABEL extensions="${HUB_EXTENSIONS_VERSION}"
+LABEL state="${HUB_STATE_VERSION}}"
 
 ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/google-cloud-sdk/bin
 
@@ -184,6 +185,10 @@ ENV GIT_DISCOVERY_ACROSS_FILESYSTEM "1"
 COPY --from=blobs /usr/local/bin /usr/local/bin
 COPY --from=blobs /opt/tf-plugins ${TF_PLUGIN_CACHE_DIR}/linux_amd64/
 COPY --from=blobs /opt/tf-custom-plugins /root/.terraform.d/plugins/linux_amd64/
+COPY --from=blobs /usr/local/google-cloud-sdk /usr/local
+COPY --from=hub /go/src/hub/bin/linux/hub /usr/local/bin/hub
+COPY --from=hub-extensions /tmp/hub-extensions /usr/local/share/hub
+COPY --from=hub-state /workspace/bin/hub-state /usr/local/share/hub/hub-state
 
 RUN \
     apk update && apk --no-cache --prune upgrade && \
@@ -195,6 +200,7 @@ RUN \
         libc6-compat \
         nodejs \
         npm \
+        ncurses \
         openssh-client \
         python3 \
         py3-pip \
@@ -210,16 +216,11 @@ RUN chmod +x /usr/local/bin/* && \
     gosu nobody true && \
     rm -rf /var/cache/apk/* /tmp/*
 
-COPY --from=blobs /usr/local/google-cloud-sdk /usr/local
 RUN gcloud config set core/disable_usage_reporting true && \
     gcloud config set component_manager/disable_update_check true && \
     gcloud --version
 
-RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}, extensions ${HUB_CLI_EXTENSIONS_VERSION}" > /etc/version
-ENV TOOLBOX_VERSION "${IMAGE_VERSION}"
-COPY --from=hub /go/src/hub/bin/linux/hub /usr/local/bin/hub
-COPY --from=hub-extensions /tmp/hub-extensions /usr/local/share/hub
-COPY --from=hub-state /workspace/bin/hub-state /usr/local/share/hub/hub-state
+RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}, extensions ${HUB_EXTENSIONS_VERSION}, state ${HUB_STATE_VERSION}" > /etc/version
 RUN cd /usr/local/share/hub && ./post-install
 
 RUN mkdir /workspace
