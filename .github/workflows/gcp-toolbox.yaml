@@ -2,6 +2,8 @@ name: 'Build and Push Toolbox for GCP'
 
 on:
   push:
+    tags:
+      - 'v*.*.*'
     branches:
       - 'master'
     paths:
@@ -30,6 +32,10 @@ on:
         default: 'master'
       hubStateCommit:
         description: 'Hub State commit hash. If empty latest is used.'
+        required: false
+        default: ''
+      customTag:
+        description: 'Name of custom tag'
         required: false
         default: ''
 
@@ -81,6 +87,18 @@ jobs:
       - name: 'Set up Docker Buildx'
         uses: 'docker/setup-buildx-action@v2'
 
+      - name: Image meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            gcr.io/superhub/cloud-shell
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ steps.image.outputs.version }}
+            type=raw,value=${{ github.event.inputs.customTag }},enable=${{ github.event.inputs.customTag != '' }}
+            type=semver,pattern={{version}}
+
       - name: 'Build and push'
         uses: "docker/build-push-action@v3"
         with:
@@ -88,9 +106,8 @@ jobs:
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: |
-            gcr.io/superhub/gcp-toolbox:latest
-            gcr.io/superhub/gcp-toolbox:${{ steps.versions.outputs.toolboxVersion }}-${{ steps.versions.outputs.hubVersion }}-${{ steps.versions.outputs.hubExtVersion }}-${{ steps.versions.outputs.hubStateVersion }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             USER_FULLNAME=${{ steps.versions.info.userFullname || github.actor }}
             TOOLBOX_VERSION=${{ steps.versions.outputs.toolboxVersion }}
