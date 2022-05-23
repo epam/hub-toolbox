@@ -1,13 +1,6 @@
 name: 'Build and Push Toolbox for GCP'
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
-    branches:
-      - 'master'
-    paths:
-      - 'gcp-toolbox/Dockerfile'
   workflow_dispatch:
     inputs:
       hubRef:
@@ -35,9 +28,8 @@ on:
         required: false
         default: ''
       customTag:
-        description: 'Name of custom tag'
-        required: false
-        default: ''
+        description: 'Name of tag. Use "latest" for release.'
+        required: true
 
 jobs:
   build:
@@ -99,10 +91,8 @@ jobs:
           images: |
             gcr.io/superhub/gcp-toolbox
           tags: |
-            type=raw,value=latest
             type=raw,value=${{ steps.image.outputs.version }}
             type=raw,value=${{ github.event.inputs.customTag }},enable=${{ github.event.inputs.customTag != '' }}
-            type=semver,pattern={{version}}
 
       - name: 'Build and push'
         uses: "docker/build-push-action@v3"
