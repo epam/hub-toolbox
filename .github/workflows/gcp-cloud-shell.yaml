@@ -7,10 +7,6 @@ on:
         description: 'Hub CLI git ref'
         required: true
         default: 'v1.0.6'
-      hubCommit:
-        description: 'Hub CLI commit hash. If empty latest release tag is used.'
-        required: false
-        default: ''
       hubExtRef:
         description: 'Hub Extensions git ref'
         required: true
@@ -53,7 +49,7 @@ jobs:
       - id: 'versions'
         name: 'Calculate versions'
         run: |
-          echo "::set-output name=hubVersion::${{ github.event.inputs.hubCommit || steps.info.outputs.hubVersion }}"
+          echo "::set-output name=hubVersion::${{ steps.info.outputs.hubVersion }}"
           echo "::set-output name=hubExtVersion::${{ github.event.inputs.hubExtCommit || steps.info.outputs.hubExtVersion }}"
           echo "::set-output name=hubStateVersion::${{ github.event.inputs.hubStateCommit || steps.info.outputs.hubStateVersion }}"
 
@@ -102,6 +98,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            HUB_CLI_RELEASE_VERSION=${{ steps.versions.outputs.hubVersion }}
+            HUB_CLI_RELEASE_VERSION=${{ github.event.inputs.hubRef }}
             HUB_EXTENSIONS_VERSION=${{ steps.versions.outputs.hubExtVersion }}
             HUB_STATE_VERSION=${{ steps.versions.outputs.hubStateVersion }}
