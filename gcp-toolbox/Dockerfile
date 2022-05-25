@@ -67,10 +67,7 @@ RUN FILE="helm-v${HELM3_VERSION}-linux-amd64.tar.gz" && \
 RUN FILE="google-cloud-cli-${GOOGLE_CLOUD_CLI_VERSION}-linux-x86_64.tar.gz" && \
     test ! -f "${FILE}" && curl -L -O \
     "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${FILE}" && \
-    tar xzf "${FILE}" -C /usr/local/ && \
-    /usr/local/google-cloud-sdk/bin/gcloud components install beta --quiet && \
-    rm -rf $(find /usr/local/google-cloud-sdk/ -regex ".*/__pycache__") && \
-    rm -rf /usr/local/google-cloud-sdk/.install/.backup
+    tar xzf "${FILE}" -C /usr/local/
 
 WORKDIR /opt/zip
 
@@ -221,6 +218,9 @@ RUN chmod +x /usr/local/bin/* && \
 
 RUN gcloud config set core/disable_usage_reporting true && \
     gcloud config set component_manager/disable_update_check true && \
+    gcloud components install beta --quiet && \
+    rm -rf /usr/local/google-cloud-sdk/.install/.backup && \
+    find /usr/local/google-cloud-sdk/ -regex ".*/__pycache__" -delete && \
     gcloud --version
 
 RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}, extensions ${HUB_EXTENSIONS_VERSION}, state ${HUB_STATE_VERSION}" > /etc/version
