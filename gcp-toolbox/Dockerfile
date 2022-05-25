@@ -217,10 +217,11 @@ RUN chmod +x /usr/local/bin/* && \
     rm -rf /var/cache/apk/* /tmp/*
 
 RUN gcloud config set core/disable_usage_reporting true && \
-    gcloud config set component_manager/disable_update_check true && \
-    gcloud components install beta --quiet && \
+    gcloud config set component_manager/disable_update_check true
+
+RUN gcloud components install beta --quiet && \
     rm -rf /usr/local/google-cloud-sdk/.install/.backup && \
-    find /usr/local/google-cloud-sdk/ -regex ".*/__pycache__" -delete && \
+    find /usr/local/google-cloud-sdk/ -type d -iname "__pycache__" -exec rm -rf {} + -prune && \
     gcloud --version
 
 RUN echo "${TOOLBOX_VERSION}, hub cli ${HUB_CLI_VERSION}, extensions ${HUB_EXTENSIONS_VERSION}, state ${HUB_STATE_VERSION}" > /etc/version
