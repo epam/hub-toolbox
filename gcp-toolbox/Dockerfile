@@ -67,7 +67,10 @@ RUN FILE="helm-v${HELM3_VERSION}-linux-amd64.tar.gz" && \
 RUN FILE="google-cloud-cli-${GOOGLE_CLOUD_CLI_VERSION}-linux-x86_64.tar.gz" && \
     test ! -f "${FILE}" && curl -L -O \
     "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${FILE}" && \
-    tar xzf "${FILE}" -C /usr/local/
+    tar xzf "${FILE}" -C /usr/local/ && \
+    /usr/local/google-cloud-sdk/bin/gcloud components install beta --quiet && \
+    rm -rf $(find /usr/local/google-cloud-sdk/ -regex ".*/__pycache__") && \
+    rm -rf /usr/local/google-cloud-sdk/.install/.backup
 
 WORKDIR /opt/zip
 
@@ -185,7 +188,7 @@ ENV GIT_DISCOVERY_ACROSS_FILESYSTEM "1"
 COPY --from=blobs /usr/local/bin /usr/local/bin
 COPY --from=blobs /opt/tf-plugins ${TF_PLUGIN_CACHE_DIR}/linux_amd64/
 COPY --from=blobs /opt/tf-custom-plugins /root/.terraform.d/plugins/linux_amd64/
-COPY --from=blobs /usr/local/google-cloud-sdk /usr/local
+COPY --from=blobs /usr/local/google-cloud-sdk /usr/local/google-cloud-sdk
 COPY --from=hub /go/src/hub/bin/linux/hub /usr/local/bin/hub
 COPY --from=hub-extensions /tmp/hub-extensions /usr/local/share/hub
 COPY --from=hub-state /workspace/bin/hub-state /usr/local/share/hub/hub-state
