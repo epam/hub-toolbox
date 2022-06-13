@@ -2,7 +2,7 @@
 
 HUB_EXTENSIONS_REF=gcp-extensions
 HUB_STATE_REF=master
-HUB_CLI_RELEASE_VERSION=v1.0.6
+HUB_CLI_RELEASE_VERSION=v1.0.9
 IMAGE_VERSION=latest
 
 while test -n "$1"; do
