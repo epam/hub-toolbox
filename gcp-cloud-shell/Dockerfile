@@ -37,6 +37,7 @@ ARG HUB_CLI_RELEASE_VERSION="v1.0.3"
 ARG JQ_VERSION="1.6"
 ARG K6_VERSION="v0.37.0"
 ARG XK6_VERSION="0.6.1"
+ARG HELM3_VERSION="3.8.2"
 
 ### Install missing packages
 RUN apt-get update && \
@@ -72,7 +73,12 @@ RUN curl -J -L -o jq https://github.com/stedolan/jq/releases/download/jq-"$JQ_VE
     tar -xf xk6.tar.gz xk6 && \
     chmod +x xk6 && \
     mv xk6 /usr/local/bin && \
-    rm xk6.tar.gz    
+    rm xk6.tar.gz
+
+# Install helm
+RUN curl -JLo "helm.tar.gz" "https://get.helm.sh/helm-v${HELM3_VERSION}-linux-amd64.tar.gz" && \
+    tar xzf "helm.tar.gz" -C /usr/local/bin --strip-components=1 linux-amd64/helm && \
+    rm -rfv "helm.tar.gz"
 
 ### Install kubectx & kubens
 COPY --from=kube-tools /tmp/kubectx/kubectx /usr/local/bin
