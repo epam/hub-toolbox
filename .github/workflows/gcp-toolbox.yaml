@@ -3,32 +3,24 @@ name: 'Build and Push Toolbox for GCP'
 on:
   workflow_dispatch:
     inputs:
-      hubRef:
-        description: 'Hub CLI git ref'
+      hubVersion:
+        description: 'Hub CLI release version. Use "latest" or release number (ex. 1.0.0).'
         required: true
-        default: 'v1.0.6'
-      hubCommit:
-        description: 'Hub CLI commit hash. If empty latest release tag is used.'
-        required: false
-        default: ''
+        default: 'latest'
+      hubStateVersion:
+        description: 'Hub State release version. Use "latest" or release number (ex. 1.0.0).'
+        required: true
+        default: 'latest'
       hubExtRef:
-        description: 'Hub Extensions git ref'
+        description: 'Hub Extensions git ref.'
         required: true
         default: 'gcp-extensions'
       hubExtCommit:
         description: 'Hub Extensions commit hash. If empty latest is used.'
         required: false
         default: ''
-      hubStateRef:
-        description: 'Hub State git ref'
-        required: true
-        default: 'master'
-      hubStateCommit:
-        description: 'Hub State commit hash. If empty latest is used.'
-        required: false
-        default: ''
       customTag:
-        description: 'Name of tag. Use "latest" for release.'
+        description: 'Name of tag. Use "latest" to release image.'
         required: true
 
 jobs:
@@ -42,30 +34,42 @@ jobs:
       - id: 'info'
         name: 'Gather info'
         run: |
-          HUB_CLI_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub.git "${{ github.event.inputs.hubRef }}" 2>/dev/null | cut -c-7)
+          HUB_CLI_VERSION="${{ github.event.inputs.hubVersion }}"
+          if test "$HUB_CLI_VERSION" = "latest"; then
+            HUB_CLI_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/agilestacks/hub/releases/latest" | jq -crM '.tag_name | select(.)' | cut -c 2-)
+            if test -z "$HUB_CLI_VERSION"; then
+              echo "Hub CLI version can't be empty"
+              exit 1
+            fi
+          fi
+
+          HUB_STATE_VERSION="${{ github.event.inputs.hubStateVersion }}"
+          if test "$HUB_STATE_VERSION" = "latest"; then
+            HUB_STATE_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/agilestacks/hub-state/releases/latest" | jq -crM '.tag_name | select(.)' | cut -c 2-)
+            if test -z "$HUB_STATE_VERSION"; then
+              echo "Hub State extension version can't be empty"
+              exit 1
+            fi
+          fi
+
+          HUB_CLI_VERSION_COMMIT=$(git ls-remote -q https://github.com/agilestacks/hub.git "v$HUB_CLI_VERSION" 2>/dev/null | cut -c-7)
           HUB_EXTENSIONS_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-extensions.git "${{ github.event.inputs.hubExtRef }}" 2>/dev/null | cut -c-7)
-          HUB_STATE_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-state.git "${{ github.event.inputs.hubStateRef }}" 2>/dev/null | cut -c-7)
+          HUB_STATE_VERSION_COMMIT=$(git ls-remote -q https://github.com/agilestacks/hub-state.git "v$HUB_STATE_VERSION" 2>/dev/null | cut -c-7)
+          IMAGE_VERSION=$(echo "${{ github.sha }}" | cut -c-7)
           USER_FULLNAME=$(curl -s -H "Accept: application/vnd.github.v3+json" "${{ github.event.sender.url }}" | jq -crM '.name | select(.)')
 
+          echo "::set-output name=toolboxVersion::$IMAGE_VERSION"
           echo "::set-output name=hubVersion::$HUB_CLI_VERSION"
+          echo "::set-output name=hubVersionCommit::$HUB_CLI_VERSION_COMMIT"
           echo "::set-output name=hubExtVersion::$HUB_EXTENSIONS_VERSION"
           echo "::set-output name=hubStateVersion::$HUB_STATE_VERSION"
+          echo "::set-output name=hubStateVersionCommit::$HUB_STATE_VERSION_COMMIT"
           echo "::set-output name=userFullname::$USER_FULLNAME"
 
       - id: 'versions'
         name: 'Calculate versions'
         run: |
-          TOOLBOX_VERSION=$(echo "${{ github.sha }}" | cut -c-7)
-
-          echo "::set-output name=toolboxVersion::$TOOLBOX_VERSION"
-          echo "::set-output name=hubVersion::${{ github.event.inputs.hubCommit || steps.info.outputs.hubVersion }}"
           echo "::set-output name=hubExtVersion::${{ github.event.inputs.hubExtCommit || steps.info.outputs.hubExtVersion }}"
-          echo "::set-output name=hubStateVersion::${{ github.event.inputs.hubStateCommit || steps.info.outputs.hubStateVersion }}"
-
-      - id: 'image'
-        name: 'Image version'
-        run: |
-          echo "::set-output name=version::${{ steps.versions.outputs.toolboxVersion }}-${{ steps.versions.outputs.hubVersion }}-${{ steps.versions.outputs.hubExtVersion }}-${{ steps.versions.outputs.hubStateVersion }}"
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -91,7 +95,7 @@ jobs:
           images: |
             gcr.io/superhub/gcp-toolbox
           tags: |
-            type=raw,value=${{ steps.image.outputs.version }}
+            type=raw,value=${{ steps.info.outputs.toolboxVersion }}-${{ steps.info.outputs.hubVersionCommit }}-${{ steps.versions.outputs.hubExtVersion }}-${{ steps.info.outputs.hubStateVersionCommit }}
             type=raw,value=${{ github.event.inputs.customTag }},enable=${{ github.event.inputs.customTag != '' }}
 
       - name: 'Build and push'
@@ -101,11 +105,12 @@ jobs:
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            USER_FULLNAME=${{ steps.versions.info.userFullname || github.actor }}
-            TOOLBOX_VERSION=${{ steps.versions.outputs.toolboxVersion }}
-            HUB_CLI_VERSION=${{ steps.versions.outputs.hubVersion }}
+            USER_FULLNAME=${{ steps.info.outputs.userFullname || github.actor }}
+            TOOLBOX_VERSION=${{ steps.info.outputs.toolboxVersion }}
+            HUB_CLI_VERSION=${{ steps.info.outputs.hubVersion }}
             HUB_EXTENSIONS_VERSION=${{ steps.versions.outputs.hubExtVersion }}
-            HUB_STATE_VERSION=${{ steps.versions.outputs.hubStateVersion }}
+            HUB_STATE_VERSION=${{ steps.info.outputs.hubStateVersion }}

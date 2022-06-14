@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
 HUB_EXTENSIONS_REF=gcp-extensions
-HUB_STATE_REF=master
-HUB_CLI_RELEASE_VERSION=v1.0.9
+HUB_STATE_RELEASE_VERSION=latest
+HUB_CLI_RELEASE_VERSION=latest
 IMAGE_VERSION=latest
 
 while test -n "$1"; do
@@ -11,11 +11,11 @@ while test -n "$1"; do
                           ;;
     --extensions )        HUB_EXTENSIONS_REF="$2"
                           shift
-                          ;;                          
+                          ;;
     --release-version )   IMAGE_VERSION="$2"
                           RELEASE="1"
                           shift
-                          ;;         
+                          ;;
     * )                   echo "Error: unknown option $1"
                           exit 1
     ;;
@@ -25,23 +25,33 @@ done
 
 IMAGE_NAME=gcr.io/superhub/cloud-shell
 
-HUB_CLI_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub.git "$HUB_CLI_RELEASE_VERSION" 2>/dev/null | cut -c-7)
-HUB_EXTENSIONS_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-extensions.git "$HUB_EXTENSIONS_REF" 2>/dev/null | cut -c-7)
-HUB_STATE_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-utils.git "$HUB_STATE_REF" 2>/dev/null | cut -c-7)
+if test "$HUB_CLI_RELEASE_VERSION" = "latest"; then
+  HUB_CLI_RELEASE_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/agilestacks/hub/releases/latest" | jq -crM '.tag_name' | cut -c 2-)
+fi
 
-IMAGE_TAG="$IMAGE_NAME:$HUB_CLI_VERSION-$HUB_EXTENSIONS_VERSION-$HUB_STATE_VERSION"
+if test "$HUB_STATE_RELEASE_VERSION" = "latest"; then
+  HUB_STATE_RELEASE_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/agilestacks/hub-state/releases/latest" | jq -crM '.tag_name' | cut -c 2-)
+fi
+
+TOOLBOX_VERSION=$(git rev-parse HEAD | cut -c-7)
+HUB_CLI_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub.git "v$HUB_CLI_RELEASE_VERSION" 2>/dev/null | cut -c-7)
+HUB_EXTENSIONS_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-extensions.git "$HUB_EXTENSIONS_REF" 2>/dev/null | cut -c-7)
+HUB_STATE_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-utils.git "v$HUB_STATE_RELEASE_VERSION" 2>/dev/null | cut -c-7)
+
+IMAGE_TAG="$IMAGE_NAME:$TOOLBOX_VERSION-$HUB_CLI_VERSION-$HUB_EXTENSIONS_VERSION-$HUB_STATE_VERSION"
 
 docker buildx build --platform linux/amd64 \
   --build-arg="HUB_CLI_RELEASE_VERSION=$HUB_CLI_RELEASE_VERSION" \
   --build-arg="HUB_EXTENSIONS_VERSION=$HUB_EXTENSIONS_VERSION" \
-  --build-arg="HUB_STATE_VERSION=$HUB_STATE_VERSION" \
+  --build-arg="HUB_STATE_RELEASE_VERSION=$HUB_STATE_RELEASE_VERSION" \
   --tag "$IMAGE_TAG" .
 
 if docker push "$IMAGE_TAG"; then
   echo "Built & pushed cloud-shell image from:"
-  echo "* Hub CLI: $HUB_CLI_RELEASE_VERSION $HUB_CLI_VERSION"
+  echo "* Hub CLI: v$HUB_CLI_RELEASE_VERSION $HUB_CLI_VERSION"
   echo "* Hub Extensions: $HUB_EXTENSIONS_REF $HUB_EXTENSIONS_VERSION"
-  echo "* Hub State: $HUB_STATE_REF $HUB_STATE_VERSION"
+  echo "* Hub State: v$HUB_STATE_RELEASE_VERSION $HUB_STATE_VERSION"
+  echo "* Toolbox: master $TOOLBOX_VERSION"
   echo "Image tag: $IMAGE_TAG"
 else
   echo "^^^ Can't push the image, see the error above ^^^"
