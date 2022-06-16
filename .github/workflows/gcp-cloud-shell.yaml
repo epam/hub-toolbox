@@ -14,7 +14,7 @@ on:
       hubExtRef:
         description: 'Hub Extensions git ref.'
         required: true
-        default: 'gcp-extensions'
+        default: 'stable'
       hubExtCommit:
         description: 'Hub Extensions commit hash. If empty latest is used.'
         required: false

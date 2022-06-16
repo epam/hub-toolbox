@@ -143,7 +143,7 @@ RUN FILE="terraform-provider-random_${TF_PROVIDER_RANDOM_VERSION}_linux_amd64.zi
 
 # Checkout Hub CLI Extensions
 FROM alpine/git:latest as hub-extensions
-ARG HUB_EXTENSIONS_VERSION="gcp-extensions"
+ARG HUB_EXTENSIONS_VERSION="stable"
 WORKDIR /tmp
 RUN git clone https://github.com/agilestacks/hub-extensions.git && \
     cd hub-extensions && \
@@ -154,7 +154,7 @@ FROM alpine:3.15
 ARG USER_FULLNAME="Agile Stacks"
 ARG TOOLBOX_VERSION="(unknown)"
 ARG HUB_CLI_VERSION="master"
-ARG HUB_EXTENSIONS_VERSION="gcp-extensions"
+ARG HUB_EXTENSIONS_VERSION="stable"
 ARG HUB_STATE_VERSION="master"
 
 LABEL maintainer="${USER_FULLNAME}"

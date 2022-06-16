@@ -4,7 +4,7 @@ IMAGE                    ?= gcr.io/superhub/gcp-toolbox
 
 TOOLBOX_VERSION        := $(shell git rev-parse HEAD | cut -c-7)
 HUB_CLI_VERSION        := latest
-HUB_EXTENSIONS_VERSION := gcp-extensions
+HUB_EXTENSIONS_VERSION := stable
 HUB_STATE_VERSION      := latest
 
 ifeq ($(HUB_CLI_VERSION),)

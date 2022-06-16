@@ -24,7 +24,7 @@ gcr.io/superhub/cloud-shell:<commit hash of CLI binary>-<commit hash of CLI exte
 
 By default, the extensions and the mgmt tool check out from the following references (branches, tags, etc.):
 ```
-HUB_EXTENSIONS_REF=gcp-extensions 
+HUB_EXTENSIONS_REF=stable
 HUB_STATE_REF=master
 ```
 

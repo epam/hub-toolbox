@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-HUB_EXTENSIONS_REF=gcp-extensions
+HUB_EXTENSIONS_REF=stable
 HUB_STATE_RELEASE_VERSION=latest
 HUB_CLI_RELEASE_VERSION=latest
 IMAGE_VERSION=latest
