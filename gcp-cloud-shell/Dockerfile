@@ -33,45 +33,45 @@ WORKDIR /usr/local/bin/
 
 ### Install yq
 RUN FILE="yq" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64" && \
-    chmod +x "${FILE}"
+    chmod +x "${FILE}" && "${FILE}" -V
 
 ### Install jq
 RUN FILE="jq" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64" && \
-    chmod +x "${FILE}"
+    chmod +x "${FILE}" && "${FILE}" -V
 
 WORKDIR /opt/tar
 
 ### Install k6
 RUN FILE="k6-v${K6_VERSION}-linux-amd64.tar.gz" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/grafana/k6/releases/download/v${K6_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ --strip-components=1
 
 ### Install k6x
 RUN FILE="xk6_${XK6_VERSION}_linux_amd64.tar.gz" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/grafana/xk6/releases/download/v${XK6_VERSION}/${FILE}" && \
     tar xf "${FILE}" -C /usr/local/bin/ xk6
 
 ### Install helm
 RUN FILE="helm-v${HELM3_VERSION}-linux-amd64.tar.gz" && \
-    test ! -f "${FILE}" && curl -J -L -O \
+    test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://get.helm.sh/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ --strip-components=1 linux-amd64/helm
 
 ### Install Hub CLI
 RUN FILE="hub_Linux_x86_64.tar.gz" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/agilestacks/hub/releases/download/v${HUB_CLI_RELEASE_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ hub
 
 ### Install Hub state extension
 RUN FILE="hub-state_Linux_x86_64.tar.gz" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/agilestacks/hub-state/releases/download/v${HUB_STATE_RELEASE_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ hub-state
 

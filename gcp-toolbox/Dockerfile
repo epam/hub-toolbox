@@ -31,69 +31,69 @@ WORKDIR /usr/local/bin/
 
 ### Install direnv
 RUN FILE="direnv" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/direnv/direnv/releases/download/v${DIRENV_VERSION}/direnv.linux-amd64"
 
 ### Install tini
 RUN FILE="tini" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-static-amd64"
 
 ### Install gosu
 RUN FILE="gosu" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64"
 
 ### Instrall kubectl
 RUN FILE="kubectl" && \
-    test ! -f "${FILE}" && curl -J -L -O \
+    test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
 
 ### Install YQ
 RUN FILE="yq" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64"
 
 ### Install JQ
 RUN FILE="jq" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64"
 
 WORKDIR /opt/tar
 
 ### Install helm
 RUN FILE="helm-v${HELM3_VERSION}-linux-amd64.tar.gz" && \
-    test ! -f "${FILE}" && curl -J -L -O \
+    test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://get.helm.sh/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ --strip-components=1 linux-amd64/helm
 
 ### Install Google Cloud CLI
 RUN FILE="google-cloud-cli-${GOOGLE_CLOUD_CLI_VERSION}-linux-x86_64.tar.gz" && \
-    test ! -f "${FILE}" && curl -J -L -O \
+    test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/
 
 ### Install k6
 RUN FILE="k6-v${K6_VERSION}-linux-amd64.tar.gz" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/grafana/k6/releases/download/v${K6_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ --strip-components=1
 
 ### Install k6x
 RUN FILE="xk6_${XK6_VERSION}_linux_amd64.tar.gz" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/grafana/xk6/releases/download/v${XK6_VERSION}/${FILE}" && \
     tar xf "${FILE}" -C /usr/local/bin/ xk6
 
 ### Install Hub CLI
 RUN FILE="hub_Linux_x86_64.tar.gz" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/agilestacks/hub/releases/download/v${HUB_CLI_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ hub
 
 ### Install Hub state extension
 RUN FILE="hub-state_Linux_x86_64.tar.gz" && \
-    test ! -f "${FILE}" && curl -J -L -o "${FILE}" \
+    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/agilestacks/hub-state/releases/download/v${HUB_STATE_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ hub-state
 
@@ -101,43 +101,43 @@ WORKDIR /opt/zip
 
 ### Install terraform
 RUN FILE="terraform_${TF_VERSION}_linux_amd64.zip" && \
-    test ! -f "${FILE}" && curl -J -L -O \
+    test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip" && \
     unzip "${FILE}" -d /usr/local/bin
 
 ### Install terraform google provider
 RUN FILE="terraform-provider-google_${TF_PROVIDER_GOOGLE_VERSION}_linux_amd64.zip" && \
-    test ! -f "${FILE}" && curl -J -L -O \
+    test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://releases.hashicorp.com/terraform-provider-google/${TF_PROVIDER_GOOGLE_VERSION}/${FILE}" && \
     unzip "${FILE}" -d /opt/tf-plugins
 
 ### Install terraform local provider
 RUN FILE="terraform-provider-local_${TF_PROVIDER_LOCAL_VERSION}_linux_amd64.zip" && \
-    test ! -f "${FILE}" && curl -J -L -O \
+    test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://releases.hashicorp.com/terraform-provider-local/${TF_PROVIDER_LOCAL_VERSION}/${FILE}" && \
     unzip "${FILE}" -d /opt/tf-plugins
 
 ### Install terraform null provider
 RUN FILE="terraform-provider-null_${TF_PROVIDER_NULL_VERSION}_linux_amd64.zip" && \
-    test ! -f "${FILE}" && curl -J -L -O \
+    test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://releases.hashicorp.com/terraform-provider-null/${TF_PROVIDER_NULL_VERSION}/${FILE}" && \
     unzip "${FILE}" -d /opt/tf-plugins
 
 ### Install terraform template provider
 RUN FILE="terraform-provider-template_${TF_PROVIDER_TEMPLATE_VERSION}_linux_amd64.zip" && \
-    test ! -f "${FILE}" && curl -J -L -O \
+    test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://releases.hashicorp.com/terraform-provider-template/${TF_PROVIDER_TEMPLATE_VERSION}/${FILE}" && \
     unzip "${FILE}" -d /opt/tf-plugins
 
 ### Install terraform tls provider
 RUN FILE="terraform-provider-tls_${TF_PROVIDER_TLS_VERSION}_linux_amd64.zip" && \
-    test ! -f "${FILE}" && curl -J -L -O \
+    test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://releases.hashicorp.com/terraform-provider-tls/${TF_PROVIDER_TLS_VERSION}/${FILE}" && \
     unzip "${FILE}" -d /opt/tf-plugins
 
 ### Install terraform random provider
 RUN FILE="terraform-provider-random_${TF_PROVIDER_RANDOM_VERSION}_linux_amd64.zip" && \
-    test ! -f "${FILE}" && curl -J -L -O \
+    test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://releases.hashicorp.com/terraform-provider-random/${TF_PROVIDER_RANDOM_VERSION}/${FILE}" && \
     unzip "${FILE}" -d /opt/tf-plugins
 
