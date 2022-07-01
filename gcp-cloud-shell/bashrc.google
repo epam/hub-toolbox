@@ -258,3 +258,6 @@ EOF'
        -d finish=${FINISH_TIME} &> /dev/null
 }
 (report_timing &)
+
+# Enalbe GKE Kubectl authentication plugin
+export USE_GKE_GCLOUD_AUTH_PLUGIN="True"

@@ -175,6 +175,8 @@ ENV TF_PLUGIN_CACHE_DIR "/root/.terraform.d/plugin-cache"
 
 ENV GIT_DISCOVERY_ACROSS_FILESYSTEM "1"
 
+ENV USE_GKE_GCLOUD_AUTH_PLUGIN "True"
+
 RUN \
     apk update && apk --no-cache --prune upgrade && \
     apk --no-cache add \
@@ -211,6 +213,7 @@ RUN gcloud config set core/disable_usage_reporting true && \
     gcloud config set component_manager/disable_update_check true
 
 RUN gcloud components install beta --quiet && \
+    gcloud components install gke-gcloud-auth-plugin --quiet && \
     rm -rf /usr/local/google-cloud-sdk/.install/.backup && \
     find /usr/local/google-cloud-sdk/ -type d -iname "__pycache__" -exec rm -rf {} + -prune && \
     gcloud --version
