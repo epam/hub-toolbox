@@ -1,31 +1,36 @@
 .DEFAULT_GOAL := build
 
-IMAGE ?= gcr.io/superhub/toolbox
+IMAGE         ?= ghcr.io/epam/hub-toolbox
+IMAGE_VERSION := $(shell git rev-parse HEAD | cut -c-7)-base
 
-TOOLBOX_VERSION        := $(shell git rev-parse HEAD | cut -c-7)
-HUB_CLI_VERSION        := latest
-HUB_EXTENSIONS_VERSION := stable
+HUB_CTL_VERSION    := latest
+HUB_STATE_VERSION  := latest
+HUB_EXTENSIONS_REF := stable
 
-ifeq ($(HUB_CLI_VERSION),)
-$(error HUB_CLI_VERSION cannot be empty)
+ifeq ($(HUB_CTL_VERSION),)
+$(error HUB_CTL_VERSION cannot be empty)
 endif
 
-ifeq ($(HUB_EXTENSIONS_VERSION),)
-$(error HUB_EXTENSIONS_VERSION cannot be empty)
+ifeq ($(HUB_STATE_VERSION),)
+$(error HUB_STATE_VERSION cannot be empty)
 endif
 
-ifeq ($(HUB_CLI_VERSION),latest)
-HUB_CLI_VERSION = $(shell curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/agilestacks/hub/releases/latest" | jq -crM ".tag_name" | cut -c 2-)
+ifeq ($(HUB_EXTENSIONS_REF),)
+$(error HUB_EXTENSIONS_REF cannot be empty)
 endif
 
-HUB_CLI_VERSION_COMMIT        := $(shell git ls-remote -q https://github.com/agilestacks/hub.git            v$(HUB_CLI_VERSION)       2>/dev/null | cut -c-7)
-HUB_EXTENSIONS_VERSION_COMMIT := $(shell git ls-remote -q https://github.com/agilestacks/hub-extensions.git $(HUB_EXTENSIONS_VERSION) 2>/dev/null | cut -c-7)
+ifeq ($(HUB_CTL_VERSION),latest)
+HUB_CTL_VERSION = $(shell curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/epam/hubctl/releases/latest" | jq -crM ".tag_name" | cut -c 2-)
+endif
 
-IMAGE_VERSION ?= $(TOOLBOX_VERSION)-$(HUB_CLI_VERSION_COMMIT)-$(HUB_EXTENSIONS_VERSION_COMMIT)
-USER_FULLNAME ?= $(shell echo "$(shell git config user.name) <$(shell git config user.email)>")
+ifeq ($(HUB_STATE_VERSION),latest)
+HUB_STATE_VERSION = $(shell curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/epam/hub-state/releases/latest" | jq -crM ".tag_name" | cut -c 2-)
+endif
 
-ifeq (,$(USER_FULLNAME))
-$(error Please supply USER_FULLNAME with your full name (example: "USER_FULLNAME=John Doe"))
+HUB_EXTENSIONS_VERSION_COMMIT := $(shell git ls-remote -q https://github.com/epam/hub-extensions.git $(HUB_EXTENSIONS_REF) 2>/dev/null | cut -c-7)
+
+ifeq ($(HUB_EXTENSIONS_VERSION_COMMIT),)
+$(error HUB_EXTENSIONS_REF wrong or does not exist)
 endif
 
 docker ?= docker
@@ -33,20 +38,14 @@ docker ?= docker
 DOCKER_BUILD_OPTS := --platform="linux/amd64"
 
 build:
-	set -e; \
 	$(docker) buildx build \
 		$(DOCKER_BUILD_OPTS) \
-		--build-arg="USER_FULLNAME=$(USER_FULLNAME)"\
-		--build-arg="TOOLBOX_VERSION=$(TOOLBOX_VERSION)" \
-		--build-arg="HUB_CLI_VERSION=$(HUB_CLI_VERSION)" \
+		--build-arg="HUB_CTL_VERSION=$(HUB_CTL_VERSION)" \
 		--build-arg="HUB_EXTENSIONS_VERSION=$(HUB_EXTENSIONS_VERSION_COMMIT)" \
+		--build-arg="HUB_STATE_VERSION=$(HUB_STATE_VERSION)" \
 		--tag $(IMAGE):$(IMAGE_VERSION) \
 		--tag $(IMAGE):latest .;
 .PHONY: build
-
-build-no-cache:
-	$(MAKE) build DOCKER_BUILD_OPTS="--no-cache"
-.PHONY: build-no-cache
 
 push:
 	$(docker) push $(IMAGE):$(IMAGE_VERSION)

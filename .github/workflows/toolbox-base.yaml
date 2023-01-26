@@ -1,0 +1,127 @@
+name: 'Build and Push - Base Toolbox'
+
+on:
+  push:
+    tags:
+    - 'base'
+  workflow_dispatch:
+    inputs:
+      hubVersion:
+        description: 'Hub CLI release version. Use "latest" or release number (ex. 1.0.0).'
+        required: true
+        default: 'latest'
+      hubStateVersion:
+        description: 'Hub State release version. Use "latest" or release number (ex. 1.0.0).'
+        required: true
+        default: 'latest'
+      hubExtRef:
+        description: 'Hub Extensions git ref.'
+        required: true
+        default: 'stable'
+      hubExtCommit:
+        description: 'Hub Extensions commit hash. If empty Hub Extensions git ref is used.'
+        required: false
+        default: ''
+      customTag:
+        description: 'Custom base image tag.'
+        required: true
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+      -
+        name: 'Checkout'
+        uses: 'actions/checkout@v3'
+
+      -
+        name: Login to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          platforms: linux/amd64
+
+      -
+        id: 'versions'
+        name: 'Collect versions info'
+        run: |
+          HUB_CTL_VERSION="${{ github.event.inputs.hubVersion }}"
+          if test "$HUB_CTL_VERSION" = "latest"; then
+            HUB_CTL_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/epam/hubctl/releases/latest" | jq -crM '.tag_name | select(.)' | cut -c 2-)
+            if test -z "$HUB_CTL_VERSION"; then
+              echo "Hub CTL version can't be empty"
+              exit 1
+            fi
+          fi
+          HUB_STATE_VERSION="${{ github.event.inputs.hubStateVersion }}"
+          if test "$HUB_STATE_VERSION" = "latest"; then
+            HUB_STATE_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/epam/hub-state/releases/latest" | jq -crM '.tag_name | select(.)' | cut -c 2-)
+            if test -z "$HUB_STATE_VERSION"; then
+              echo "Hub State extension version can't be empty"
+              exit 1
+            fi
+          fi
+          HUB_EXTENSIONS_VERSION=$(git ls-remote -q https://github.com/epam/hub-extensions.git "${{ github.event.inputs.hubExtRef || stable }}" 2>/dev/null | cut -c-7)
+
+          echo "HUB_CTL_VERSION=$HUB_CTL_VERSION" >> $GITHUB_ENV
+          echo "HUB_EXTENSIONS_VERSION=$HUB_EXTENSIONS_VERSION" >> $GITHUB_ENV
+          echo "HUB_STATE_VERSION=$HUB_STATE_VERSION" >> $GITHUB_ENV
+          echo "DOCKER_IMAGE_TAG=$(date +"%Y%m%d-%H%M%S")" >> $GITHUB_ENV
+
+      -
+        name: Image meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          flavor: |
+            latest=true
+          images: |
+            ghcr.io/epam/hub-toolbox
+          tags: |
+            type=raw,value=${{ env.DOCKER_IMAGE_TAG }},enable=${{ github.event.inputs.customTag == '' }},suffix=-base
+            type=raw,value=${{ env.DOCKER_IMAGE_TAG }},enable=${{ github.event.inputs.customTag == '' }}
+            type=raw,value=base,enable=${{ github.event.inputs.customTag == '' }}
+            type=raw,value=${{ github.event.inputs.customTag }},enable=${{ github.event.inputs.customTag != '' }},prefix=custom-
+
+      -
+        name: 'Build and push'
+        uses: "docker/build-push-action@v3"
+        with:
+          context: ./base
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            HUB_CTL_VERSION=${{ env.HUB_CTL_VERSION }}
+            HUB_EXTENSIONS_VERSION=${{ github.event.inputs.hubExtCommit || env.HUB_EXTENSIONS_VERSION }}
+            HUB_STATE_VERSION=${{ env.HUB_STATE_VERSION }}
+
+      -
+        name: 'Tag release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Setup git
+          USERNAME="${{ github.event.head_commit.author.name || github.actor }}"
+          USEREMAIL="${{ github.event.head_commit.author.email || format('{0}@users.noreply.github.com', github.actor) }}"
+          git config user.name "$USERNAME"
+          git config user.email "$USEREMAIL"
+          gh auth setup-git
+
+          # Create git tag and push it
+          TAG="${{ steps.meta.outputs.version }}"
+          git tag -a "$TAG" -m "Release $TAG"
+          git tag -a "gcp" -m "Base Toolbox release - $TAG"
+          git tag -a "azure" -m "Base Toolbox release - $TAG"
+          git push origin --tags
