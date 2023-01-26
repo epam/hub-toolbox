@@ -1,4 +1,0 @@
-#!/bin/bash
-
-eval "$(direnv hook bash)"
-echo "  direnv started"
