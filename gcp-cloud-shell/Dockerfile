@@ -1,30 +1,22 @@
 # Checkout Hub CLI Extensions
-FROM alpine/git:latest as hub-extensions
+FROM alpine/git:v2.36.3 as hub-extensions
 
-ARG HUB_EXTENSIONS_VERSION="master"
+ARG HUB_EXTENSIONS_VERSION="stable"
 
 WORKDIR /tmp
-RUN git clone https://github.com/agilestacks/hub-extensions.git && \
+RUN git clone https://github.com/epam/hub-extensions.git && \
     cd hub-extensions && \
     git checkout ${HUB_EXTENSIONS_VERSION}
 
 # Checkout kubectx & kubens
-FROM alpine/git:latest as kube-tools
+FROM alpine/git:v2.36.3 as kube-tools
 
 WORKDIR /tmp
 RUN git clone https://github.com/ahmetb/kubectx && \
     cd kubectx
 
 # Installing Tools
-FROM alpine:3.15 as blobs
-
-ARG YQ_VERSION="4.16.2"
-ARG JQ_VERSION="1.6"
-ARG K6_VERSION="0.37.0"
-ARG XK6_VERSION="0.6.1"
-ARG HELM3_VERSION="3.8.2"
-ARG HUB_CLI_RELEASE_VERSION="1.0.9"
-ARG HUB_STATE_RELEASE_VERSION="1.0.0"
+FROM alpine:3.17 as blobs
 
 RUN apk update && \
     apk add zip gzip unzip tar curl git
@@ -32,51 +24,50 @@ RUN apk update && \
 WORKDIR /usr/local/bin/
 
 ### Install yq
+ARG YQ_VERSION="4.30.8"
 RUN FILE="yq" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64" && \
     chmod +x "${FILE}" && "${FILE}" -V
 
-### Install jq
-RUN FILE="jq" && \
-    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
-    "https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64" && \
-    chmod +x "${FILE}" && "${FILE}" -V
-
 WORKDIR /opt/tar
 
 ### Install k6
+ARG K6_VERSION="0.42.0"
 RUN FILE="k6-v${K6_VERSION}-linux-amd64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/grafana/k6/releases/download/v${K6_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ --strip-components=1
 
 ### Install k6x
+ARG XK6_VERSION="0.8.1"
 RUN FILE="xk6_${XK6_VERSION}_linux_amd64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/grafana/xk6/releases/download/v${XK6_VERSION}/${FILE}" && \
     tar xf "${FILE}" -C /usr/local/bin/ xk6
 
-### Install helm
-RUN FILE="helm-v${HELM3_VERSION}-linux-amd64.tar.gz" && \
-    test ! -f "${FILE}" && curl --fail -J -L -O \
-    "https://get.helm.sh/${FILE}" && \
-    tar xzf "${FILE}" -C /usr/local/bin/ --strip-components=1 linux-amd64/helm
-
 ### Install Hub CLI
+ARG HUB_CTL_RELEASE_VERSION="1.0.10"
 RUN FILE="hub_Linux_x86_64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
-    "https://github.com/agilestacks/hub/releases/download/v${HUB_CLI_RELEASE_VERSION}/${FILE}" && \
+    "https://github.com/epam/hubctl/releases/download/v${HUB_CTL_RELEASE_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ hub
 
 ### Install Hub state extension
+ARG HUB_STATE_RELEASE_VERSION="1.0.0"
 RUN FILE="hub-state_Linux_x86_64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
-    "https://github.com/agilestacks/hub-state/releases/download/v${HUB_STATE_RELEASE_VERSION}/${FILE}" && \
+    "https://github.com/epam/hub-state/releases/download/v${HUB_STATE_RELEASE_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ hub-state
 
 # GCP Cloud Shell
 FROM gcr.io/cloudshell-images/cloudshell:latest
+
+LABEL org.opencontainers.image.url="https://github.com/epam/hub-toolbox"
+LABEL org.opencontainers.image.source="https://github.com/epam/hub-toolbox.git"
+LABEL org.opencontainers.image.authors="Antons Kranga <antons_kranga@epam.com>, Viktors Oginskis <viktors_oginskis@epam.com>, Igor Lysak <igor_lysak@epam.com>"
+LABEL org.opencontainers.image.description="GCP Cloud Shell is a Docker image that is used to perform provisioning operations on a Hub CTL stack, such as deploy and undeploy in Google Cloud Provider as Cloud Sheel custom image."
+LABEL org.opencontainers.image.licenses="Apache-2.0"
 
 ### Install missing packages
 RUN apt-get update && \
@@ -89,5 +80,3 @@ COPY --from=kube-tools /tmp/kubectx/kubectx /usr/local/bin
 COPY --from=kube-tools /tmp/kubectx/kubens /usr/local/bin
 ### Install tools
 COPY --from=blobs /usr/local/bin /usr/local/bin
-
-COPY bashrc.google /google/devshell/bashrc.google

@@ -1,8 +1,8 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 HUB_EXTENSIONS_REF=stable
 HUB_STATE_RELEASE_VERSION=latest
-HUB_CLI_RELEASE_VERSION=latest
+HUB_CTL_RELEASE_VERSION=latest
 IMAGE_VERSION=latest
 
 while test -n "$1"; do
@@ -23,32 +23,35 @@ while test -n "$1"; do
   shift
 done
 
-IMAGE_NAME=gcr.io/superhub/cloud-shell
+IMAGE_NAME=ghcr.io/epam/hub-toolbox-gcp-cloud-shell
 
-if test "$HUB_CLI_RELEASE_VERSION" = "latest"; then
-  HUB_CLI_RELEASE_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/agilestacks/hub/releases/latest" | jq -crM '.tag_name' | cut -c 2-)
+GITHUB_API_URL="https://api.github.com/repos/epam"
+curl=(curl -s -H "Accept: application/vnd.github.v3+json")
+if test "$HUB_CTL_RELEASE_VERSION" = "latest"; then
+  HUB_CTL_RELEASE_VERSION=$("${curl[@]}" "$GITHUB_API_URL/hubctl/releases/latest" | jq -crM '.tag_name' | cut -c 2-)
 fi
 
 if test "$HUB_STATE_RELEASE_VERSION" = "latest"; then
-  HUB_STATE_RELEASE_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/agilestacks/hub-state/releases/latest" | jq -crM '.tag_name' | cut -c 2-)
+  HUB_STATE_RELEASE_VERSION=$("${curl[@]}" "$GITHUB_API_URL/hub-state/releases/latest" | jq -crM '.tag_name' | cut -c 2-)
 fi
 
+GITHUB_URL="https://github.com/epam"
 TOOLBOX_VERSION=$(git rev-parse HEAD | cut -c-7)
-HUB_CLI_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub.git "v$HUB_CLI_RELEASE_VERSION" 2>/dev/null | cut -c-7)
-HUB_EXTENSIONS_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-extensions.git "$HUB_EXTENSIONS_REF" 2>/dev/null | cut -c-7)
-HUB_STATE_VERSION=$(git ls-remote -q https://github.com/agilestacks/hub-utils.git "v$HUB_STATE_RELEASE_VERSION" 2>/dev/null | cut -c-7)
+HUB_CTL_VERSION=$(git ls-remote -q "$GITHUB_URL/hubctl.git" "v$HUB_CTL_RELEASE_VERSION" 2>/dev/null | cut -c-7)
+HUB_EXTENSIONS_VERSION=$(git ls-remote -q "$GITHUB_URL/hub-extensions.git" "$HUB_EXTENSIONS_REF" 2>/dev/null | cut -c-7)
+HUB_STATE_VERSION=$(git ls-remote -q "$GITHUB_URL/hub-state.git" "v$HUB_STATE_RELEASE_VERSION" 2>/dev/null | cut -c-7)
 
-IMAGE_TAG="$IMAGE_NAME:$TOOLBOX_VERSION-$HUB_CLI_VERSION-$HUB_EXTENSIONS_VERSION-$HUB_STATE_VERSION"
+IMAGE_TAG="$IMAGE_NAME:$TOOLBOX_VERSION-$HUB_CTL_VERSION-$HUB_EXTENSIONS_VERSION-$HUB_STATE_VERSION"
 
 docker buildx build --platform linux/amd64 \
-  --build-arg="HUB_CLI_RELEASE_VERSION=$HUB_CLI_RELEASE_VERSION" \
+  --build-arg="HUB_CTL_RELEASE_VERSION=$HUB_CTL_RELEASE_VERSION" \
   --build-arg="HUB_EXTENSIONS_VERSION=$HUB_EXTENSIONS_VERSION" \
   --build-arg="HUB_STATE_RELEASE_VERSION=$HUB_STATE_RELEASE_VERSION" \
   --tag "$IMAGE_TAG" .
 
 if docker push "$IMAGE_TAG"; then
   echo "Built & pushed cloud-shell image from:"
-  echo "* Hub CLI: v$HUB_CLI_RELEASE_VERSION $HUB_CLI_VERSION"
+  echo "* Hub CLI: v$HUB_CTL_RELEASE_VERSION $HUB_CTL_VERSION"
   echo "* Hub Extensions: $HUB_EXTENSIONS_REF $HUB_EXTENSIONS_VERSION"
   echo "* Hub State: v$HUB_STATE_RELEASE_VERSION $HUB_STATE_VERSION"
   echo "* Toolbox: master $TOOLBOX_VERSION"
