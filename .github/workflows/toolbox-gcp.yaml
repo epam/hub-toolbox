@@ -66,6 +66,7 @@ jobs:
 
       -
         name: 'Tag release'
+        if: ${{ github.event.inputs.customTag == '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
