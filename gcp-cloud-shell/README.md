@@ -6,9 +6,7 @@ The main building blocks of the GCP Cloud Shell image are:
 * [Hub CTL extensions (source)](https://github.com/epam/hub-extensions)
 * [Hub State mgmt tool (source)](https://github.com/epam/hub-state)
 
-The [Dockerfile](Dockerfile) downloads the given version of the SuperHub CLI binary, as well as
-checks out from Git the given references of the extensions and the mgmt tool,
-and builds them into the image.
+The [Dockerfile](Dockerfile) downloads the given version of the Hub CTL binary, as well as checks out from Git the given references of the extensions and the mgmt tool, and builds them into the image.
 
 To build an image run:
 
@@ -20,20 +18,20 @@ This will build & push the latest GCP Cloud Shell image from the given reference
 The naming convention of the image tag is:
 
 ```text
-gcr.io/superhub/cloud-shell:<commit hash of CLI binary>-<commit hash of CLI extensions>-<commit hash of HUB state>
+ghcr.io/epam/hub-toolbox-gcp-cloud-shell:<commit hash of toolbox>-<commit hash of Hub CTL binary>-<commit hash of Hub extensions>-<commit hash of Hub state binary>
 ```
 
-By default, the extensions and the mgmt tool check out from the following references (branches, tags, etc.):
+By default, the extensions check out from the following references (branches, tags, etc.):
 
-```text
+```bash
 HUB_EXTENSIONS_REF=stable
-HUB_STATE_REF=master
 ```
 
-But default SuperhHub CLI binary version is the following:
+Hub CTL and Hub State binaries are downloads from the latest release.
 
-```text
-HUB_CLI_RELEASE_VERSION=v1.0.10
+```bash
+HUB_STATE_RELEASE_VERSION=latest
+HUB_CTL_RELEASE_VERSION=latest
 ```
 
 Feel free to update them according to your needs before running `./image`

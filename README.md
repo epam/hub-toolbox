@@ -6,20 +6,6 @@ The image contains all the tools installed and configured that are required by t
 
 ## Toolbox versions
 
-There are several [versions](https://hub.docker.com/r/agilestacks/toolbox/tags) of the image: `latest`, `stage`, `stable`, etc. distinguished by image label. There are also specialized images extending base image with additional tools required for some particular software component, `spinnaker-*` for example.
-
-## Tools included
-
-The base image contains following tools:
-
-* [Hub CTL]
-* [Hub Extensions](https://github.com/epam/hub-extensions/)
-* [git](https://git-scm.com/)
-* [jq](https://github.com/stedolan/jq)
-* [yq](https://github.com/mikefarah/yq)
-* [Kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/)
-* [Terraform](https://www.terraform.io/)
-* [Helm](https://helm.sh/)
-* curl, zip, vim, rsync, sed, gnupg, bash, wget.
+There are several versions of the image: [`base`](/base/README.md), [`gcp`](/gcp/README.md), [`azure`](/azure/README.md).
 
 [Hub CTL]: https://github.com/epam/hubctl
