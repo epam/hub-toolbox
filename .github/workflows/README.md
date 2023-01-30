@@ -4,6 +4,10 @@
 
 Here is you can find description of workflows used in this repository.
 
+### Requirements
+
+Workflow permissions should be set to a `Read and Write permissions` option in repository settings (`Settings -> Actions -> General -> Workflow permissions`) to be able to push tags and run workflows from another workflow.
+
 ## Base toolbox workflow [toolbox-base.yaml]
 
 This workflow is used to trigger the build and push of the base toolbox docker image.
