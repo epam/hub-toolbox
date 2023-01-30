@@ -20,8 +20,9 @@ on:
         required: false
         default: ''
       customTag:
-        description: 'Name of tag. Use "latest" to release image.'
-        required: true
+        description: 'Name of tag.'
+        required: false
+        default: 'latest'
 
 jobs:
   build:
@@ -36,9 +37,9 @@ jobs:
         id: 'info'
         name: 'Gather info'
         env:
-          HUB_CTL_VERSION: ${{ github.event.inputs.hubVersion || 'latest' }}
-          HUB_STATE_VERSION: ${{ github.event.inputs.hubStateVersion || 'latest' }}
-          HUB_EXT_REF: ${{ github.event.inputs.hubExtRef || 'stable' }}
+          HUB_CTL_VERSION: ${{ inputs.hubVersion || 'latest' }}
+          HUB_STATE_VERSION: ${{ inputs.hubStateVersion || 'latest' }}
+          HUB_EXT_REF: ${{ inputs.hubExtRef || 'stable' }}
         run: |
           HUB_CTL_VERSION="${{ env.HUB_CTL_VERSION }}"
           if test "$HUB_CTL_VERSION" = "latest"; then
@@ -74,7 +75,7 @@ jobs:
         id: 'versions'
         name: 'Calculate versions'
         run: |
-          echo "hubExtVersion=${{ github.event.inputs.hubExtCommit || steps.info.outputs.hubExtVersion }}" >> $GITHUB_OUTPUT
+          echo "hubExtVersion=${{ inputs.hubExtCommit || steps.info.outputs.hubExtVersion }}" >> $GITHUB_OUTPUT
 
       -
         name: Login to GHCR
@@ -99,7 +100,7 @@ jobs:
             ghcr.io/epam/hub-toolbox-gcp-cloud-shell
           tags: |
             type=raw,value=${{ steps.info.outputs.imageVersion }}-${{ steps.info.outputs.hubVersionCommit }}-${{ steps.versions.outputs.hubExtVersion }}-${{ steps.info.outputs.hubStateVersionCommit }}
-            type=raw,value=${{ github.event.inputs.customTag }},enable=${{ github.event.inputs.customTag != '' }}
+            type=raw,value=${{ inputs.customTag }},enable=${{ inputs.customTag != '' }}
 
       -
         name: 'Build and push'

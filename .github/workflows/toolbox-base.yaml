@@ -23,8 +23,9 @@ on:
         required: false
         default: ''
       customTag:
-        description: 'Custom base image tag.'
-        required: true
+        description: 'Custom base image tag. Empty value triggers release build'
+        required: false
+        default: ''
 
 jobs:
   build:
@@ -53,9 +54,9 @@ jobs:
         id: 'versions'
         name: 'Collect versions info'
         env:
-          HUB_CTL_VERSION: ${{ github.event.inputs.hubVersion || 'latest' }}
-          HUB_STATE_VERSION: ${{ github.event.inputs.hubStateVersion || 'latest' }}
-          HUB_EXT_REF: ${{ github.event.inputs.hubExtRef || 'stable' }}
+          HUB_CTL_VERSION: ${{ inputs.hubVersion || 'latest' }}
+          HUB_STATE_VERSION: ${{ inputs.hubStateVersion || 'latest' }}
+          HUB_EXT_REF: ${{ inputs.hubExtRef || 'stable' }}
         run: |
           HUB_CTL_VERSION="${{ env.HUB_CTL_VERSION }}"
           if test "$HUB_CTL_VERSION" = "latest"; then
@@ -85,16 +86,18 @@ jobs:
         name: Image meta
         id: meta
         uses: docker/metadata-action@v4
+        env:
+          CUSTOM_TAG: ${{ inputs.customTag || env.DOCKER_IMAGE_TAG }}
         with:
           flavor: |
             latest=true
           images: |
             ghcr.io/epam/hub-toolbox
           tags: |
-            type=raw,value=${{ env.DOCKER_IMAGE_TAG }},enable=${{ github.event.inputs.customTag == '' }},suffix=-base
-            type=raw,value=${{ env.DOCKER_IMAGE_TAG }},enable=${{ github.event.inputs.customTag == '' }}
-            type=raw,value=base,enable=${{ github.event.inputs.customTag == '' }}
-            type=raw,value=${{ github.event.inputs.customTag }},enable=${{ github.event.inputs.customTag != '' }},prefix=custom-
+            type=raw,value=${{ env.DOCKER_IMAGE_TAG }},enable=${{ inputs.customTag == '' }},suffix=-base
+            type=raw,value=${{ env.DOCKER_IMAGE_TAG }},enable=${{ inputs.customTag == '' }}
+            type=raw,value=base,enable=${{ inputs.customTag == '' }}
+            type=raw,value=${{ env.CUSTOM_TAG }},enable=${{ inputs.customTag != '' }},prefix=custom-base-
 
       -
         name: 'Build and push'
@@ -109,25 +112,34 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             HUB_CTL_VERSION=${{ env.HUB_CTL_VERSION }}
-            HUB_EXTENSIONS_VERSION=${{ github.event.inputs.hubExtCommit || env.HUB_EXTENSIONS_VERSION }}
+            HUB_EXTENSIONS_VERSION=${{ inputs.hubExtCommit || env.HUB_EXTENSIONS_VERSION }}
             HUB_STATE_VERSION=${{ env.HUB_STATE_VERSION }}
 
       -
         name: 'Tag release'
-        if: ${{ github.event.inputs.customTag == '' }}
+        if: ${{ inputs.customTag == '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           USERNAME: ${{ github.event.head_commit.author.name || github.actor }}
           USEREMAIL: ${{ github.event.head_commit.author.email || format('{0}@users.noreply.github.com', github.actor) }}
         run: |
-          # Setup git
+          echo "Setup git"
           git config user.name "$USERNAME"
           git config user.email "$USEREMAIL"
           gh auth setup-git
 
-          # Create git tag and push it
+          echo "Create git tag and push it"
           TAG="${{ steps.meta.outputs.version }}"
           git tag -a "$TAG" -m "Release $TAG"
-          git tag -a "gcp" -m "Base Toolbox release - $TAG"
-          git tag -a "azure" -m "Base Toolbox release - $TAG"
-          git push origin --tags
+          git tag -a "gcp" -m "Base Toolbox release - $TAG" --force
+          git tag -a "azure" -m "Base Toolbox release - $TAG" --force
+          # Do not use --tags because `base` is also tag
+          git push origin "$TAG"
+          git push origin "gcp" --force
+          git push origin "azure" --force
+
+          echo "Start workflow for toolbox-azure"
+          gh workflow run toolbox-azure.yaml
+
+          echo "Start workflow for toolbox-gcp"
+          gh workflow run toolbox-gcp.yaml

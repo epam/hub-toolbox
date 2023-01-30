@@ -7,8 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       customTag:
-        description: 'Custom gcp image tag.'
-        required: true
+        description: 'Custom base image tag. Empty value triggers release build'
+        required: false
+        default: ''
 
 jobs:
   build:
@@ -49,9 +50,9 @@ jobs:
           images: |
             ghcr.io/epam/hub-toolbox
           tags: |
-            type=raw,value=${{ env.DOCKER_IMAGE_TAG }},enable=${{ github.event.inputs.customTag == '' }},suffix=-gcp
-            type=raw,value=gcp,enable=${{ github.event.inputs.customTag == '' }}
-            type=raw,value=${{ github.event.inputs.customTag }},enable=${{ github.event.inputs.customTag != '' }},prefix=custom-gcp-
+            type=raw,value=${{ env.DOCKER_IMAGE_TAG }},enable=${{ inputs.customTag == '' }},suffix=-gcp
+            type=raw,value=gcp,enable=${{ inputs.customTag == '' }}
+            type=raw,value=${{ inputs.customTag }},enable=${{ inputs.customTag != '' }},prefix=custom-gcp-
 
       - name: 'Build and push'
         uses: "docker/build-push-action@v3"
@@ -66,18 +67,18 @@ jobs:
 
       -
         name: 'Tag release'
-        if: ${{ github.event.inputs.customTag == '' }}
+        if: ${{ inputs.customTag == '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           USERNAME: ${{ github.event.head_commit.author.name || github.actor }}
           USEREMAIL: ${{ github.event.head_commit.author.email || format('{0}@users.noreply.github.com', github.actor) }}
         run: |
-          # Setup git
+          echo "Setup git"
           git config user.name "$USERNAME"
           git config user.email "$USEREMAIL"
           gh auth setup-git
 
-          # Create git tag and push it
+          echo "Create git tag and push it"
           TAG="${{ steps.meta.outputs.version }}"
           git tag -a "$TAG" -m "Release $TAG"
-          git push origin --tags
+          git push origin "$TAG"
