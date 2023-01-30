@@ -69,7 +69,7 @@ jobs:
               exit 1
             fi
           fi
-          HUB_EXTENSIONS_VERSION=$(git ls-remote -q https://github.com/epam/hub-extensions.git "${{ github.event.inputs.hubExtRef || stable }}" 2>/dev/null | cut -c-7)
+          HUB_EXTENSIONS_VERSION=$(git ls-remote -q https://github.com/epam/hub-extensions.git "${{ github.event.inputs.hubExtRef || 'stable' }}" 2>/dev/null | cut -c-7)
 
           echo "HUB_CTL_VERSION=$HUB_CTL_VERSION" >> $GITHUB_ENV
           echo "HUB_EXTENSIONS_VERSION=$HUB_EXTENSIONS_VERSION" >> $GITHUB_ENV
@@ -112,10 +112,10 @@ jobs:
         if: ${{ github.event.inputs.customTag == '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ github.event.head_commit.author.name || github.actor }}
+          USEREMAIL: ${{ github.event.head_commit.author.email || format('{0}@users.noreply.github.com', github.actor) }}
         run: |
           # Setup git
-          USERNAME="${{ github.event.head_commit.author.name || github.actor }}"
-          USEREMAIL="${{ github.event.head_commit.author.email || format('{0}@users.noreply.github.com', github.actor) }}"
           git config user.name "$USERNAME"
           git config user.email "$USEREMAIL"
           gh auth setup-git

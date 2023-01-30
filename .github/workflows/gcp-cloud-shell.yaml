@@ -59,18 +59,18 @@ jobs:
           HUB_STATE_VERSION_COMMIT=$(git ls-remote -q https://github.com/epam/hub-state.git "v$HUB_STATE_VERSION" 2>/dev/null | cut -c-7)
           IMAGE_VERSION=$(echo "${{ github.sha }}" | cut -c-7)
 
-          echo "::set-output name=imageVersion::$IMAGE_VERSION"
-          echo "::set-output name=hubVersion::$HUB_CTL_VERSION"
-          echo "::set-output name=hubVersionCommit::$HUB_CTL_VERSION_COMMIT"
-          echo "::set-output name=hubExtVersion::$HUB_EXTENSIONS_VERSION"
-          echo "::set-output name=hubStateVersion::$HUB_STATE_VERSION"
-          echo "::set-output name=hubStateVersionCommit::$HUB_STATE_VERSION_COMMIT"
+          echo "imageVersion=$IMAGE_VERSION" >> $GITHUB_OUTPUT
+          echo "hubVersion=$HUB_CTL_VERSION" >> $GITHUB_OUTPUT
+          echo "hubVersionCommit=$HUB_CTL_VERSION_COMMIT" >> $GITHUB_OUTPUT
+          echo "hubExtVersion=$HUB_EXTENSIONS_VERSION" >> $GITHUB_OUTPUT
+          echo "hubStateVersion=$HUB_STATE_VERSION" >> $GITHUB_OUTPUT
+          echo "hubStateVersionCommit=$HUB_STATE_VERSION_COMMIT" >> $GITHUB_OUTPUT
 
       -
         id: 'versions'
         name: 'Calculate versions'
         run: |
-          echo "::set-output name=hubExtVersion::${{ github.event.inputs.hubExtCommit || steps.info.outputs.hubExtVersion }}"
+          echo "hubExtVersion=${{ github.event.inputs.hubExtCommit || steps.info.outputs.hubExtVersion }}" >> $GITHUB_OUTPUT
 
       -
         name: Login to GHCR
