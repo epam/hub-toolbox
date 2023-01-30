@@ -1,11 +1,11 @@
 # Copyright 2023 EPAM Systems, Inc.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,7 +58,7 @@ RUN FILE="hub_Linux_x86_64.tar.gz" && \
 ARG HUB_STATE_VERSION="1.0.0"
 RUN FILE="hub-state_Linux_x86_64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
-    "https://github.com/agilestacks/hub-state/releases/download/v${HUB_STATE_VERSION}/${FILE}" && \
+    "https://github.com/epam/hub-state/releases/download/v${HUB_STATE_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ hub-state
 
 ### Zip based tools
