@@ -1,11 +1,11 @@
 # Copyright 2023 EPAM Systems, Inc.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,7 +15,7 @@
 # Checkout Hub CLI Extensions
 FROM alpine/git:v2.36.3 as hub-extensions
 
-ARG HUB_EXTENSIONS_VERSION="stable"
+ARG HUB_EXTENSIONS_VERSION="master"
 
 WORKDIR /tmp
 RUN git clone https://github.com/epam/hub-extensions.git && \
@@ -61,11 +61,11 @@ RUN FILE="xk6_${XK6_VERSION}_linux_amd64.tar.gz" && \
     tar xf "${FILE}" -C /usr/local/bin/ xk6
 
 ### Install Hub CLI
-ARG HUB_CTL_RELEASE_VERSION="1.0.10"
-RUN FILE="hub_Linux_x86_64.tar.gz" && \
+ARG HUB_CTL_RELEASE_VERSION="1.0.11"
+RUN FILE="hubctl_Linux_x86_64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/epam/hubctl/releases/download/v${HUB_CTL_RELEASE_VERSION}/${FILE}" && \
-    tar xzf "${FILE}" -C /usr/local/bin/ hub
+    tar xzf "${FILE}" -C /usr/local/bin/ hubctl
 
 ### Install Hub state extension
 ARG HUB_STATE_RELEASE_VERSION="1.0.0"

@@ -48,11 +48,11 @@ RUN FILE="helm-v${HELM3_VERSION}-linux-amd64.tar.gz" && \
     tar xzf "${FILE}" -C /usr/local/bin/ --strip-components=1 linux-amd64/helm
 
 ### Install Hub CLI
-ARG HUB_CTL_VERSION="1.0.10"
-RUN FILE="hub_Linux_x86_64.tar.gz" && \
+ARG HUB_CTL_VERSION="1.0.11"
+RUN FILE="hubctl_Linux_x86_64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/epam/hubctl/releases/download/v${HUB_CTL_VERSION}/${FILE}" && \
-    tar xzf "${FILE}" -C /usr/local/bin/ hub
+    tar xzf "${FILE}" -C /usr/local/bin/ hubctl
 
 ### Install Hub state extension
 ARG HUB_STATE_VERSION="1.0.0"
@@ -73,7 +73,7 @@ RUN FILE="terraform_${TF_VERSION}_linux_amd64.zip" && \
 
 ### Checkout Hub CLI Extensions
 FROM alpine/git:v2.36.3 as hub-extensions
-ARG HUB_EXTENSIONS_VERSION="stable"
+ARG HUB_EXTENSIONS_VERSION="master"
 WORKDIR /tmp
 RUN git clone https://github.com/epam/hub-extensions.git && \
     cd hub-extensions && \
@@ -97,8 +97,7 @@ COPY --from=hub-extensions  /tmp/hub-extensions          /usr/local/share/hub
 
 RUN chmod +x /usr/local/bin/*
 
-RUN \
-    apk update && apk upgrade && \
+RUN apk update && apk upgrade && \
     apk add --no-cache \
         bash \
         curl \
