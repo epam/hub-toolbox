@@ -109,7 +109,5 @@ RUN apk update && apk upgrade && \
 
 RUN rm -rf /var/cache/apk/* /tmp/*
 
-ENTRYPOINT ["/bin/bash", "--rcfile", "/etc/bash/bashrc"]
-
 RUN mkdir /workspace
 WORKDIR /workspace
