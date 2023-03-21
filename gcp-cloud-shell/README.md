@@ -24,7 +24,7 @@ ghcr.io/epam/hub-toolbox-gcp-cloud-shell:<commit hash of toolbox>-<commit hash o
 By default, the extensions check out from the following references (branches, tags, etc.):
 
 ```bash
-HUB_EXTENSIONS_REF=stable
+HUB_EXTENSIONS_REF=master
 ```
 
 Hub CTL and Hub State binaries are downloads from the latest release.

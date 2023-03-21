@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-HUB_EXTENSIONS_REF=stable
+HUB_EXTENSIONS_REF=master
 HUB_STATE_RELEASE_VERSION=latest
 HUB_CTL_RELEASE_VERSION=latest
 IMAGE_VERSION=latest

@@ -31,4 +31,5 @@ RUN \
 
 RUN rm -rf /var/cache/apk/* /tmp/*
 
-RUN pip3 install azure-cli
+ARG AZURE_CLI_VERSION="2.46.0"
+RUN pip3 install azure-cli==${AZURE_CLI_VERSION}

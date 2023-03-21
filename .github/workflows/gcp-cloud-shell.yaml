@@ -14,7 +14,7 @@ on:
       hubExtRef:
         description: 'Hub Extensions git ref.'
         required: true
-        default: 'stable'
+        default: 'master'
       hubExtCommit:
         description: 'Hub Extensions commit hash. If empty Hub Extensions git ref is used.'
         required: false
@@ -39,7 +39,7 @@ jobs:
         env:
           HUB_CTL_VERSION: ${{ inputs.hubVersion || 'latest' }}
           HUB_STATE_VERSION: ${{ inputs.hubStateVersion || 'latest' }}
-          HUB_EXT_REF: ${{ inputs.hubExtRef || 'stable' }}
+          HUB_EXT_REF: ${{ inputs.hubExtRef || 'master' }}
         run: |
           HUB_CTL_VERSION="${{ env.HUB_CTL_VERSION }}"
           if test "$HUB_CTL_VERSION" = "latest"; then

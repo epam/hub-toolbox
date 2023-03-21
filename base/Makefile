@@ -19,7 +19,7 @@ IMAGE_VERSION := $(shell git rev-parse HEAD | cut -c-7)-base
 
 HUB_CTL_VERSION    := latest
 HUB_STATE_VERSION  := latest
-HUB_EXTENSIONS_REF := stable
+HUB_EXTENSIONS_REF := master
 
 ifeq ($(HUB_CTL_VERSION),)
 $(error HUB_CTL_VERSION cannot be empty)

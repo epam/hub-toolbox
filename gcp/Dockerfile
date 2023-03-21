@@ -20,7 +20,7 @@ RUN apk update && \
 WORKDIR /usr/local/bin/
 
 ### Install Google Cloud CLI
-ARG GOOGLE_CLOUD_CLI_VERSION="415.0.0"
+ARG GOOGLE_CLOUD_CLI_VERSION="422.0.0"
 RUN FILE="google-cloud-cli-${GOOGLE_CLOUD_CLI_VERSION}-linux-x86_64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${FILE}" && \
@@ -35,7 +35,7 @@ LABEL org.opencontainers.image.authors="Antons Kranga <antons_kranga@epam.com>, 
 LABEL org.opencontainers.image.description="GCP Toolbox is a Docker image that is used to perform provisioning operations on a Hub CTL stack, such as deploy and undeploy in Google Cloud Provider."
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 
-ENV PATH ${PATH}:/usr/local/google-cloud-sdk/bin
+ENV PATH /usr/local/google-cloud-sdk/bin:${PATH}
 
 ENV USE_GKE_GCLOUD_AUTH_PLUGIN "True"
 

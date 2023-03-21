@@ -38,7 +38,7 @@ RUN apk update && \
 WORKDIR /usr/local/bin/
 
 ### Install yq
-ARG YQ_VERSION="4.30.8"
+ARG YQ_VERSION="4.32.2"
 RUN FILE="yq" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64" && \
@@ -47,21 +47,21 @@ RUN FILE="yq" && \
 WORKDIR /opt/tar
 
 ### Install k6
-ARG K6_VERSION="0.42.0"
+ARG K6_VERSION="0.43.1"
 RUN FILE="k6-v${K6_VERSION}-linux-amd64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/grafana/k6/releases/download/v${K6_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ --strip-components=1
 
 ### Install k6x
-ARG XK6_VERSION="0.8.1"
+ARG XK6_VERSION="0.9.0"
 RUN FILE="xk6_${XK6_VERSION}_linux_amd64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/grafana/xk6/releases/download/v${XK6_VERSION}/${FILE}" && \
     tar xf "${FILE}" -C /usr/local/bin/ xk6
 
 ### Install Hub CLI
-ARG HUB_CTL_RELEASE_VERSION="1.0.11"
+ARG HUB_CTL_RELEASE_VERSION="1.0.12"
 RUN FILE="hubctl_Linux_x86_64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/epam/hubctl/releases/download/v${HUB_CTL_RELEASE_VERSION}/${FILE}" && \

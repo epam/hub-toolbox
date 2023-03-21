@@ -20,13 +20,13 @@ RUN apk update && \
 WORKDIR /usr/local/bin/
 
 ### Instrall kubectl
-ARG KUBECTL_VERSION="1.24.10"
+ARG KUBECTL_VERSION="1.24.12"
 RUN FILE="kubectl" && \
     test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
 
 ### Install YQ
-ARG YQ_VERSION="4.30.8"
+ARG YQ_VERSION="4.32.2"
 RUN FILE="yq" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64"
@@ -41,14 +41,14 @@ RUN FILE="jq" && \
 WORKDIR /opt/tar
 
 ### Install helm
-ARG HELM3_VERSION="3.11.0"
+ARG HELM3_VERSION="3.11.2"
 RUN FILE="helm-v${HELM3_VERSION}-linux-amd64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://get.helm.sh/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ --strip-components=1 linux-amd64/helm
 
 ### Install Hub CLI
-ARG HUB_CTL_VERSION="1.0.11"
+ARG HUB_CTL_VERSION="1.0.12"
 RUN FILE="hubctl_Linux_x86_64.tar.gz" && \
     test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
     "https://github.com/epam/hubctl/releases/download/v${HUB_CTL_VERSION}/${FILE}" && \
@@ -65,7 +65,7 @@ RUN FILE="hub-state_Linux_x86_64.tar.gz" && \
 WORKDIR /opt/zip
 
 ### Install terraform
-ARG TF_VERSION="1.3.7"
+ARG TF_VERSION="1.4.2"
 RUN FILE="terraform_${TF_VERSION}_linux_amd64.zip" && \
     test ! -f "${FILE}" && curl --fail -J -L -O \
     "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip" && \
@@ -92,8 +92,8 @@ ENV USER "root"
 ENV UID  "0"
 ENV GID  "0"
 
-COPY --from=blobs           /usr/local/bin               /usr/local/bin
-COPY --from=hub-extensions  /tmp/hub-extensions          /usr/local/share/hub
+COPY --from=blobs          /usr/local/bin      /usr/local/bin
+COPY --from=hub-extensions /tmp/hub-extensions /usr/local/share/hub
 
 RUN chmod +x /usr/local/bin/*
 
