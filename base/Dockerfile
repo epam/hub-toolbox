@@ -103,6 +103,7 @@ RUN apk update && apk upgrade && \
         curl \
         git \
         gzip \
+        ncurses \
         sed \
         tar \
         vim
