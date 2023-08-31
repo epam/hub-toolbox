@@ -1,0 +1,84 @@
+name: 'Build and Push - AWS Toolbox'
+
+on:
+  push:
+    tags:
+    - 'aws'
+  workflow_dispatch:
+    inputs:
+      customTag:
+        description: 'Custom base image tag. Empty value triggers release build'
+        required: false
+        default: ''
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+      -
+        name: 'Checkout'
+        uses: 'actions/checkout@v3'
+
+      -
+        name: Login to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      -
+        name: 'Set up Docker Buildx'
+        uses: 'docker/setup-buildx-action@v2'
+        with:
+          platforms: linux/amd64
+
+      -
+        id: 'versions'
+        name: 'Collect versions info'
+        run: |
+          echo "DOCKER_IMAGE_TAG=$(date +"%Y%m%d-%H%M%S")" >> $GITHUB_ENV
+
+      -
+        name: Image meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          flavor: |
+            latest=false
+          images: |
+            ghcr.io/epam/hub-toolbox
+          tags: |
+            type=raw,value=${{ env.DOCKER_IMAGE_TAG }},enable=${{ inputs.customTag == '' }},suffix=-aws
+            type=raw,value=aws,enable=${{ inputs.customTag == '' }}
+            type=raw,value=${{ inputs.customTag }},enable=${{ inputs.customTag != '' }},prefix=custom-aws-
+
+      - name: 'Build and push'
+        uses: "docker/build-push-action@v3"
+        with:
+          context: ./aws
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      -
+        name: 'Tag release'
+        if: ${{ inputs.customTag == '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: ${{ github.event.head_commit.author.name || github.actor }}
+          USEREMAIL: ${{ github.event.head_commit.author.email || format('{0}@users.noreply.github.com', github.actor) }}
+        run: |
+          echo "Setup git"
+          git config user.name "$USERNAME"
+          git config user.email "$USEREMAIL"
+          gh auth setup-git
+
+          echo "Create git tag and push it"
+          TAG="${{ steps.meta.outputs.version }}"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
