@@ -12,25 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM python:3.10-alpine3.17 as builder
+FROM python:3.11-alpine3.18 as builder
 
 # Install deps
-RUN apk update && apk upgrade && \
-    apk add --no-cache \
-        git \
-        unzip \
-        groff \
-        build-base \
-        libffi-dev \
-        cmake
+RUN apk update && apk --no-cache --prune upgrade \
+    && apk --no-cache add \
+        git=2.40.1-r0 \
+        unzip=6.0-r14 \
+        groff=1.22.4-r4 \
+        build-base=0.5-r3 \
+        libffi-dev=3.4.4-r2 \
+        cmake=3.26.5-r0 \
+        sqlite-dev=3.41.2-r2
 RUN rm -rf /var/cache/apk/* /tmp/*
 
-RUN mkdir -p /opt/src/aws-cli
-WORKDIR /opt/src/aws-cli
+WORKDIR /opt/src
 
 # Install AWS CLI
 ARG AWS_CLI_VERSION="2.13.14"
-RUN git clone --single-branch --depth 1 -b "${AWS_CLI_VERSION}" https://github.com/aws/aws-cli.git .
+RUN git clone --single-branch --depth 1 -b "${AWS_CLI_VERSION}" https://github.com/aws/aws-cli.git
+WORKDIR /opt/src/aws-cli
 RUN ./configure --with-install-type=portable-exe --with-download-deps
 RUN make
 RUN make install
