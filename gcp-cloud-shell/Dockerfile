@@ -67,13 +67,6 @@ RUN FILE="hubctl_Linux_x86_64.tar.gz" && \
     "https://github.com/epam/hubctl/releases/download/v${HUB_CTL_RELEASE_VERSION}/${FILE}" && \
     tar xzf "${FILE}" -C /usr/local/bin/ hubctl
 
-### Install Hub state extension
-ARG HUB_STATE_RELEASE_VERSION="1.0.0"
-RUN FILE="hub-state_Linux_x86_64.tar.gz" && \
-    test ! -f "${FILE}" && curl --fail -J -L -o "${FILE}" \
-    "https://github.com/epam/hub-state/releases/download/v${HUB_STATE_RELEASE_VERSION}/${FILE}" && \
-    tar xzf "${FILE}" -C /usr/local/bin/ hub-state
-
 # GCP Cloud Shell
 FROM gcr.io/cloudshell-images/cloudshell:latest
 

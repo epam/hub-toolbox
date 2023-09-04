@@ -4,7 +4,6 @@ The main building blocks of the GCP Cloud Shell image are:
 
 * [Hub CTL binary](https://github.com/epam/hubctl/releases)
 * [Hub CTL extensions (source)](https://github.com/epam/hub-extensions)
-* [Hub State mgmt tool (source)](https://github.com/epam/hub-state)
 
 The [Dockerfile](Dockerfile) downloads the given version of the Hub CTL binary, as well as checks out from Git the given references of the extensions and the mgmt tool, and builds them into the image.
 
@@ -18,7 +17,7 @@ This will build & push the latest GCP Cloud Shell image from the given reference
 The naming convention of the image tag is:
 
 ```text
-ghcr.io/epam/hub-toolbox-gcp-cloud-shell:<commit hash of toolbox>-<commit hash of Hub CTL binary>-<commit hash of Hub extensions>-<commit hash of Hub state binary>
+ghcr.io/epam/hub-toolbox-gcp-cloud-shell:<commit hash of toolbox>-<commit hash of Hub CTL binary>-<commit hash of Hub extensions>
 ```
 
 By default, the extensions check out from the following references (branches, tags, etc.):
@@ -27,10 +26,9 @@ By default, the extensions check out from the following references (branches, ta
 HUB_EXTENSIONS_REF=master
 ```
 
-Hub CTL and Hub State binaries are downloads from the latest release.
+Hub CTL binary is downloaded from the latest release.
 
 ```bash
-HUB_STATE_RELEASE_VERSION=latest
 HUB_CTL_RELEASE_VERSION=latest
 ```
 

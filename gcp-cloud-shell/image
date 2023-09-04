@@ -6,7 +6,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@
 
 
 HUB_EXTENSIONS_REF=master
-HUB_STATE_RELEASE_VERSION=latest
 HUB_CTL_RELEASE_VERSION=latest
 IMAGE_VERSION=latest
 
@@ -46,29 +45,22 @@ if test "$HUB_CTL_RELEASE_VERSION" = "latest"; then
   HUB_CTL_RELEASE_VERSION=$("${curl[@]}" "$GITHUB_API_URL/hubctl/releases/latest" | jq -crM '.tag_name' | cut -c 2-)
 fi
 
-if test "$HUB_STATE_RELEASE_VERSION" = "latest"; then
-  HUB_STATE_RELEASE_VERSION=$("${curl[@]}" "$GITHUB_API_URL/hub-state/releases/latest" | jq -crM '.tag_name' | cut -c 2-)
-fi
-
 GITHUB_URL="https://github.com/epam"
 TOOLBOX_VERSION=$(git rev-parse HEAD | cut -c-7)
 HUB_CTL_VERSION=$(git ls-remote -q "$GITHUB_URL/hubctl.git" "v$HUB_CTL_RELEASE_VERSION" 2>/dev/null | cut -c-7)
 HUB_EXTENSIONS_VERSION=$(git ls-remote -q "$GITHUB_URL/hub-extensions.git" "$HUB_EXTENSIONS_REF" 2>/dev/null | cut -c-7)
-HUB_STATE_VERSION=$(git ls-remote -q "$GITHUB_URL/hub-state.git" "v$HUB_STATE_RELEASE_VERSION" 2>/dev/null | cut -c-7)
 
-IMAGE_TAG="$IMAGE_NAME:$TOOLBOX_VERSION-$HUB_CTL_VERSION-$HUB_EXTENSIONS_VERSION-$HUB_STATE_VERSION"
+IMAGE_TAG="$IMAGE_NAME:$TOOLBOX_VERSION-$HUB_CTL_VERSION-$HUB_EXTENSIONS_VERSION"
 
 docker buildx build --platform linux/amd64 \
   --build-arg="HUB_CTL_RELEASE_VERSION=$HUB_CTL_RELEASE_VERSION" \
   --build-arg="HUB_EXTENSIONS_VERSION=$HUB_EXTENSIONS_VERSION" \
-  --build-arg="HUB_STATE_RELEASE_VERSION=$HUB_STATE_RELEASE_VERSION" \
   --tag "$IMAGE_TAG" .
 
 if docker push "$IMAGE_TAG"; then
   echo "Built & pushed cloud-shell image from:"
   echo "* Hub CLI: v$HUB_CTL_RELEASE_VERSION $HUB_CTL_VERSION"
   echo "* Hub Extensions: $HUB_EXTENSIONS_REF $HUB_EXTENSIONS_VERSION"
-  echo "* Hub State: v$HUB_STATE_RELEASE_VERSION $HUB_STATE_VERSION"
   echo "* Toolbox: master $TOOLBOX_VERSION"
   echo "Image tag: $IMAGE_TAG"
 else

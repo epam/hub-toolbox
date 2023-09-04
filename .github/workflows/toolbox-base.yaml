@@ -10,10 +10,6 @@ on:
         description: 'Hub CLI release version. Use "latest" or release number (ex. 1.0.0).'
         required: true
         default: 'latest'
-      hubStateVersion:
-        description: 'Hub State release version. Use "latest" or release number (ex. 1.0.0).'
-        required: true
-        default: 'latest'
       hubExtRef:
         description: 'Hub Extensions git ref.'
         required: true
@@ -55,7 +51,6 @@ jobs:
         name: 'Collect versions info'
         env:
           HUB_CTL_VERSION: ${{ inputs.hubVersion || 'latest' }}
-          HUB_STATE_VERSION: ${{ inputs.hubStateVersion || 'latest' }}
           HUB_EXT_REF: ${{ inputs.hubExtRef || 'master' }}
         run: |
           HUB_CTL_VERSION="${{ env.HUB_CTL_VERSION }}"
@@ -67,19 +62,10 @@ jobs:
             fi
           fi
 
-          HUB_STATE_VERSION="${{ env.HUB_STATE_VERSION }}"
-          if test "$HUB_STATE_VERSION" = "latest"; then
-            HUB_STATE_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/epam/hub-state/releases/latest" | jq -crM '.tag_name | select(.)' | cut -c 2-)
-            if test -z "$HUB_STATE_VERSION"; then
-              echo "Hub State extension version can't be empty"
-              exit 1
-            fi
-          fi
           HUB_EXTENSIONS_VERSION=$(git ls-remote -q https://github.com/epam/hub-extensions.git "${{ env.HUB_EXT_REF }}" 2>/dev/null | cut -c-7)
 
           echo "HUB_CTL_VERSION=$HUB_CTL_VERSION" >> $GITHUB_ENV
           echo "HUB_EXTENSIONS_VERSION=$HUB_EXTENSIONS_VERSION" >> $GITHUB_ENV
-          echo "HUB_STATE_VERSION=$HUB_STATE_VERSION" >> $GITHUB_ENV
           echo "DOCKER_IMAGE_TAG=$(date +"%Y%m%d-%H%M%S")" >> $GITHUB_ENV
 
       -
@@ -113,7 +99,6 @@ jobs:
           build-args: |
             HUB_CTL_VERSION=${{ env.HUB_CTL_VERSION }}
             HUB_EXTENSIONS_VERSION=${{ inputs.hubExtCommit || env.HUB_EXTENSIONS_VERSION }}
-            HUB_STATE_VERSION=${{ env.HUB_STATE_VERSION }}
 
       -
         name: 'Tag release'
