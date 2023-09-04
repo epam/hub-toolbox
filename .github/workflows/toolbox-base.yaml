@@ -116,12 +116,17 @@ jobs:
           echo "Create git tag and push it"
           TAG="${{ steps.meta.outputs.version }}"
           git tag -a "$TAG" -m "Release $TAG"
+          git tag -a "aws" -m "Base Toolbox release - $TAG" --force
           git tag -a "gcp" -m "Base Toolbox release - $TAG" --force
           git tag -a "azure" -m "Base Toolbox release - $TAG" --force
           # Do not use --tags because `base` is also tag
           git push origin "$TAG"
+          git push origin "aws" --force
           git push origin "gcp" --force
           git push origin "azure" --force
+
+          echo "Start workflow for toolbox-aws"
+          gh workflow run toolbox-aws.yaml
 
           echo "Start workflow for toolbox-azure"
           gh workflow run toolbox-azure.yaml
