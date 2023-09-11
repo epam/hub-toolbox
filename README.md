@@ -6,6 +6,6 @@ The image contains all the tools installed and configured that are required by t
 
 ## Toolbox versions
 
-There are several versions of the image: [`base`](/base/README.md), [`gcp`](/gcp/README.md), [`azure`](/azure/README.md).
+There are several versions of the image: [`base`](/base/README.md), [`aws`](/aws/README.md), [`gcp`](/gcp/README.md), [`azure`](/azure/README.md).
 
 [Hub CTL]: https://github.com/epam/hubctl
